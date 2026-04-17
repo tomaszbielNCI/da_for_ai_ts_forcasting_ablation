@@ -1,0 +1,45 @@
+# Horizons configuration for time series forecasting
+# Based on academic project requirements and ablation study design
+
+horizons:
+  # Primary horizons for analysis
+  primary: [1, 3, 10, 25]
+  
+  # Extended horizons for future work
+  extended: [5, 15, 20, 30, 50]
+  
+  # Horizon-specific configurations
+  config:
+    1:
+      window_size: 10
+      description: "Short-term prediction"
+      weight: 0.8  # For ensemble weighting
+    3:
+      window_size: 15
+      description: "Medium-term prediction"
+      weight: 0.8
+    10:
+      window_size: 20
+      description: "Long-term prediction"
+      weight: 0.8
+    25:
+      window_size: 25
+      description: "Very long-term prediction"
+      weight: 0.2  # Lower weight for ensemble
+
+# Walk-forward validation configuration
+walk_forward:
+  folds:
+    - train_end: 2000
+      valid_start: 2000
+      valid_end: 2500
+    - train_end: 2500
+      valid_start: 2500
+      valid_end: 3000
+    - train_end: 3000
+      valid_start: 3000
+      valid_end: 3600
+  
+  # Full training split for final submission
+  full_train:
+    max_ts: 3601

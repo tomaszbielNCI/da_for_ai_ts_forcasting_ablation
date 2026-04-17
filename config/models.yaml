@@ -1,0 +1,158 @@
+# Models configuration for ablation study
+# Based on research questions and academic requirements
+
+models:
+  # LightGBM variants (primary focus)
+  lightgbm:
+    baseline:
+      name: "lgbm_base"
+      description: "Baseline LightGBM with raw features"
+      params:
+        objective: "regression"
+        metric: "rmse"
+        num_leaves: 50
+        learning_rate: 0.05
+        n_estimators: 300
+        max_depth: 10
+        min_child_samples: 20
+        subsample: 0.8
+        colsample_bytree: 0.8
+        reg_alpha: 0.1
+        reg_lambda: 0.1
+        random_state: 42
+        verbose: -1
+    
+    shap_engineered:
+      name: "lgbm_shap"
+      description: "LightGBM with SHAP-selected features"
+      params:
+        objective: "regression"
+        metric: "rmse"
+        num_leaves: 50
+        learning_rate: 0.05
+        n_estimators: 300
+        max_depth: 10
+        min_child_samples: 20
+        subsample: 0.8
+        colsample_bytree: 0.8
+        reg_alpha: 0.1
+        reg_lambda: 0.1
+        random_state: 42
+        verbose: -1
+    
+    target_encoding:
+      name: "lgbm_te"
+      description: "LightGBM with target encoding + early stopping"
+      params:
+        objective: "regression"
+        metric: "rmse"
+        num_leaves: 50
+        learning_rate: 0.05
+        n_estimators: 1000
+        max_depth: 10
+        min_child_samples: 20
+        subsample: 0.8
+        colsample_bytree: 0.8
+        reg_alpha: 0.1
+        reg_lambda: 0.1
+        random_state: 42
+        verbose: -1
+
+  # Baseline comparison models
+  xgboost:
+    name: "xgb_baseline"
+    description: "XGBoost baseline for comparison"
+    params:
+      objective: "reg:squarederror"
+      eval_metric: "rmse"
+      max_depth: 6
+      learning_rate: 0.1
+      n_estimators: 300
+      subsample: 0.8
+      colsample_bytree: 0.8
+      random_state: 42
+
+  catboost:
+    name: "catboost_baseline"
+    description: "CatBoost baseline for comparison"
+    params:
+      loss_function: "RMSE"
+      eval_metric: "RMSE"
+      depth: 6
+      learning_rate: 0.1
+      iterations: 300
+      random_state: 42
+
+  # Bayesian Neural Networks
+  bnn:
+    pre_shap:
+      name: "bnn_pre"
+      description: "BNN with pre-SHAP feature aggregation"
+      params:
+        window_sizes: [10, 15, 20, 25]
+        batch_size: 128
+        epochs: 50
+        learning_rate: 0.001
+        embedding_dims:
+          code: 8
+          sub_code: 12
+          sub_category: 4
+    
+    post_shap:
+      name: "bnn_post"
+      description: "BNN with post-SHAP uncertainty quantification"
+      params:
+        window_sizes: [10, 15, 20, 25]
+        batch_size: 128
+        epochs: 50
+        learning_rate: 0.001
+        embedding_dims:
+          code: 8
+          sub_code: 12
+          sub_category: 4
+
+  # Negative control (for ablation study)
+  mamba:
+    name: "mamba_control"
+    description: "Mamba model as negative control"
+    params:
+      # Placeholder for Mamba-specific parameters
+      d_model: 256
+      d_state: 16
+      d_conv: 4
+      expand: 2
+
+# Feature selection configuration
+feature_selection:
+  shap:
+    top_n: [10, 15, 20]  # Different feature counts for ablation
+    sample_size: 5000
+    noise_threshold: 0.05
+  
+  correlation:
+    threshold: 0.95
+    method: "pearson"
+
+# Ensemble configuration
+ensemble:
+  strategies:
+    equal_weight:
+      name: "equal_weight"
+      description: "Equal weighting across models"
+    
+    shap_weighted:
+      name: "shap_weighted"
+      description: "Weighting based on SHAP importance"
+    
+    performance_weighted:
+      name: "performance_weighted"
+      description: "Weighting based on validation performance"
+    
+    per_horizon:
+      name: "per_horizon"
+      description: "Best model per horizon selection"
+      weights:
+        1: 0.8  # lgbm_all_raw
+        3: 0.8  # lgbm_v3_no_ultra
+        10: 0.8  # lgbm_v3_no_ultra
+        25: 0.2  # lgbm_top20_engineered
