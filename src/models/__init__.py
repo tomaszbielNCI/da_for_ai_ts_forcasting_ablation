@@ -10,6 +10,13 @@ This module contains implementations of various models used in the ablation stud
 
 from .baseline_lgbm import BaselineLGBM
 from .shap_analyzer import SHAPAnalyzer
+from .lgbm_shap_10 import LGBM_SHAP_10
+from .lgbm_shap_20 import LGBM_SHAP_20
+from .lgbm_all_plus_shap import LGBM_All_Plus_SHAP
+from .xgb_model import XGBoostModel
+from .catboost_model import CatBoostModel
+from .trio_shap_models import TrioSHAPModels
+from .ensemble_shap import EnsembleSHAP
 # from .lgbm_base import LightGBMBase
 # from .lgbm_shap import LightGBMSHAP
 # from .xgb import XGBoostModel
@@ -21,6 +28,13 @@ from .shap_analyzer import SHAPAnalyzer
 __all__ = [
     "BaselineLGBM",
     "SHAPAnalyzer",
+    "LGBM_SHAP_10",
+    "LGBM_SHAP_20", 
+    "LGBM_All_Plus_SHAP",
+    "XGBoostModel",
+    "CatBoostModel",
+    "TrioSHAPModels",
+    "EnsembleSHAP",
     # "LightGBMBase",
     # "LightGBMSHAP", 
     # "XGBoostModel",
