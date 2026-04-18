@@ -84,15 +84,14 @@ da_for_ai_ts_forcasting_ablation/
 - **LO5**: Critical analysis and presentation of results
 
 ### IEEE Conference Paper Structure
-- **8-10 pages**, double-column format
-- **150-250 word abstract**
+- **8-10 pages**, double-column format (10% of learning outcomes)
+- **150-250 word abstract** 
 - **12-15 Scopus-indexed references**
 - **CRISP-DM methodology application**
-- **Multiple evaluation metrics** (RMSE, Pearson, Private Score)
+- **Multiple evaluation metrics** (RMSE, Pearson, Private Score, etc)
 
 ### Presentation Requirements
-- **10 minutes maximum**, 7 slides
-- **Team coordination** with individual aspect presentation
+- **10 minutes maximum**, 7 slides 30 % of learning outcomes for Data Analytics in NCI
 - **Methodology overview** and key findings
 - **Academic and practical implications**
 
