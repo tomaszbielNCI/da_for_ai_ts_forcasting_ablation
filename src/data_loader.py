@@ -14,7 +14,17 @@ from pathlib import Path
 import polars as pl
 import yaml
 import logging
+import re
+import time
 from typing import Tuple, Optional, Dict, Any
+
+# Try to import gdown for Google Drive downloads
+try:
+    import gdown
+    GDOWN_AVAILABLE = True
+except ImportError:
+    GDOWN_AVAILABLE = False
+    logging.warning("gdown not available. Google Drive downloads may not work for large files.")
 
 class DataLoader:
     """
@@ -37,10 +47,17 @@ class DataLoader:
         
         # Load configuration
         if config is None:
-            config = self._load_config()
+            config = DataLoader._load_config()
         
-        self.paths_config = config.get('paths', {})
-        self.data_config = config.get('data', {})
+        # Handle nested structure
+        paths_config = config.get('paths', {})
+        if 'paths' in paths_config:
+            # Handle double nested structure
+            self.paths_config = paths_config['paths']
+        else:
+            self.paths_config = paths_config
+        
+        self.data_config = self.paths_config.get('data', {})
         
         # Environment detection
         self.env = self._detect_environment()
@@ -49,7 +66,8 @@ class DataLoader:
         # Set paths based on environment
         self.train_path, self.test_path = self._get_data_paths()
     
-    def _load_config(self) -> Dict[str, Any]:
+    @staticmethod
+    def _load_config() -> Dict[str, Any]:
         """Load configuration from YAML files."""
         config = {}
         config_dir = Path('../config') if Path('../config').exists() else Path('config')
@@ -75,7 +93,9 @@ class DataLoader:
         
         # Check for local data files
         local_paths = self._get_local_paths()
-        if all(Path(path).exists() for path in local_paths.values()):
+        # Convert to absolute paths for checking
+        absolute_paths = {key: Path(path).resolve() for key, path in local_paths.items()}
+        if all(path.exists() for path in absolute_paths.values()):
             return 'local'
         
         # Default to download mode
@@ -149,6 +169,58 @@ class DataLoader:
             self.logger.error(f"Failed to download {url}: {str(e)}")
             raise
     
+    def _download_from_gdrive(self, file_id: str, destination: Path) -> None:
+        """
+        Download files from Google Drive using gdown library.
+        
+        Args:
+            file_id: Google Drive file ID
+            destination: Local path to save file
+        """
+        self.logger.info(f"Downloading from Google Drive (ID: {file_id[:8]}...) to {destination}")
+        
+        if not GDOWN_AVAILABLE:
+            raise ImportError("gdown library not available. Install with: pip install gdown")
+        
+        try:
+            # Create directory if it doesn't exist
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Use gdown to download the file
+            url = f"https://drive.google.com/uc?id={file_id}"
+            self.logger.info(f"Using gdown to download from: {url}")
+            
+            gdown.download(url, str(destination), quiet=False)
+            
+            # Verify the file was downloaded and is valid
+            if destination.exists():
+                file_size_mb = destination.stat().st_size / (1024 * 1024)
+                self.logger.info(f"Downloaded {destination.name}: {file_size_mb:.1f}MB")
+                
+                # Verify it's a valid parquet file
+                if file_size_mb < 1:
+                    # Check if it's an HTML error page
+                    try:
+                        with open(destination, 'r', errors='ignore') as f:
+                            content = f.read(200)
+                            if 'html' in content.lower():
+                                raise ValueError("Downloaded file appears to be HTML error page")
+                    except:
+                        pass
+                
+                # Try to read as parquet to verify
+                try:
+                    df = pl.read_parquet(destination)
+                    self.logger.info(f"Successfully verified parquet file: {df.shape}")
+                except Exception as e:
+                    raise ValueError(f"Downloaded file is not a valid parquet: {e}")
+            else:
+                raise FileNotFoundError("File was not created after download")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to download from Google Drive (ID: {file_id}): {str(e)}")
+            raise
+    
     def _download_data_if_needed(self) -> None:
         """Download data if in download mode and files don't exist."""
         if self.env != 'download':
@@ -157,20 +229,31 @@ class DataLoader:
         download_config = self.data_config.get('download', {})
         train_url = download_config.get('train_url')
         test_url = download_config.get('test_url')
+        train_gdrive_id = download_config.get('train_gdrive_id')
+        test_gdrive_id = download_config.get('test_gdrive_id')
         download_dir = Path(download_config.get('base_dir', './downloaded_data'))
         
-        if not train_url or not test_url:
-            raise ValueError("Download URLs not configured in paths.yaml")
+        # Check for either URLs or GDrive IDs
+        if not train_url and not train_gdrive_id:
+            raise ValueError("Train download URL or Google Drive ID not configured in paths.yaml")
+        if not test_url and not test_gdrive_id:
+            raise ValueError("Test download URL or Google Drive ID not configured in paths.yaml")
         
         # Download files if they don't exist
         train_path = download_dir / 'train.parquet'
         test_path = download_dir / 'test.parquet'
         
         if not train_path.exists():
-            self._download_from_url(train_url, train_path)
+            if train_gdrive_id:
+                self._download_from_gdrive(train_gdrive_id, train_path)
+            else:
+                self._download_from_url(train_url, train_path)
         
         if not test_path.exists():
-            self._download_from_url(test_url, test_path)
+            if test_gdrive_id:
+                self._download_from_gdrive(test_gdrive_id, test_path)
+            else:
+                self._download_from_url(test_url, test_path)
     
     def load_data(self) -> Tuple[pl.DataFrame, pl.DataFrame]:
         """

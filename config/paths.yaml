@@ -1,57 +1,43 @@
-# Paths configuration for data access and storage
-# Supports Kaggle, local, and URL-based data loading
-
-paths:
-  # Data paths with environment detection
-  data:
-    # Kaggle environment paths
-    kaggle:
-      train: "/kaggle/input/competitions/ts-forecasting/train.parquet"
-      test: "/kaggle/input/competitions/ts-forecasting/test.parquet"
-      working: "/kaggle/working/"
-    
-    # Local environment paths
-    local:
-      base_dir: "../"
-      train: "../data/train.parquet"
-      test: "../data/test.parquet"
-      working: "./results/"
-    
-    # Download paths (for teacher/external data)
-    download:
-      base_dir: "./downloaded_data"
-      train_url: "LINK_DO_TRAIN"  # Replace with actual URL
-      test_url: "LINK_DO_TEST"   # Replace with actual URL
-  
-  # Results and outputs
-  results:
-    base_dir: "./results"
-    models: "./results/models"
-    shap_plots: "./results/shap_plots"
-    predictions: "./results/predictions"
-    comparisons: "./results/comparisons"
-  
-  # Artifacts for final paper
-  artifacts:
-    base_dir: "./artifacts"
-    figures: "./artifacts/figures"
-    tables: "./artifacts/tables"
-    
-  # Notebook paths
-  notebooks:
-    base_dir: "./notebooks"
-    eda: "./notebooks/01_eda_widgets.ipynb"
-    ablation: "./notebooks/02_ablation_study.ipynb"
-    presentation: "./notebooks/03_presentation.ipynb"
-
-# Environment detection settings
 environment:
   auto_detect: true
-  kaggle_check_path: "/kaggle/input"
-  local_check_path: "../data"
-  
-# Logging configuration
+  kaggle_check_path: /kaggle/input
+  local_check_path: ../data
 logging:
-  level: "INFO"
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  file: "./logs/pipeline.log"
+  file: ./logs/pipeline.log
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  level: INFO
+paths:
+  artifacts:
+    base_dir: ./artifacts
+    figures: ./artifacts/figures
+    tables: ./artifacts/tables
+  data:
+    download:
+      base_dir: ./downloaded_data
+      # You can use either direct URLs or Google Drive file IDs
+      # Google Drive file IDs are recommended for large files (virus scan bypass)
+      test_gdrive_id: 1cWxdooyeSSMghsiUdPIDSIXEepLyDEa6
+      train_gdrive_id: 19VWQoWImXzuWfx3YpT4zF7ldwanTwGwG
+      # Fallback URLs (optional - will be used if GDrive IDs are not specified)
+      test_url: https://drive.google.com/uc?export=download&id=1cWxdooyeSSMghsiUdPIDSIXEepLyDEa6
+      train_url: https://drive.google.com/uc?export=download&id=19VWQoWImXzuWfx3YpT4zF7ldwanTwGwG
+    kaggle:
+      test: /kaggle/input/competitions/ts-forecasting/test.parquet
+      train: /kaggle/input/competitions/ts-forecasting/train.parquet
+      working: /kaggle/working/
+    local:
+      base_dir: ./
+      test: ./data/test.parquet
+      train: ./data/train.parquet
+      working: ./results/
+  notebooks:
+    ablation: ./notebooks/02_ablation_study.ipynb
+    base_dir: ./notebooks
+    eda: ./notebooks/01_eda_widgets.ipynb
+    presentation: ./notebooks/03_presentation.ipynb
+  results:
+    base_dir: ./results
+    comparisons: ./results/comparisons
+    models: ./results/models
+    predictions: ./results/predictions
+    shap_plots: ./results/shap_plots
