@@ -13,7 +13,7 @@ __author__ = "Tomasz Biel"
 __email__ = "x25113186@student.ncirl.ie"
 
 from .data_loader import DataLoader
-# from .preprocessor import DataPreprocessor
+from .preprocessor import DataPreprocessor
 # from .feature_selector import FeatureSelector
 # from .validator import DataValidator
 # from .ensemble import EnsembleManager
@@ -22,7 +22,7 @@ from .data_loader import DataLoader
 
 __all__ = [
     "DataLoader",
-    # "DataPreprocessor", 
+    "DataPreprocessor", 
     # "FeatureSelector",
     # "DataValidator",
     # "EnsembleManager",
