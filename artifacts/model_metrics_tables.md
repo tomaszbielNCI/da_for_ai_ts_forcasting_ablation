@@ -46,7 +46,16 @@
 | H10 | 0.047505 | 0.014024 | 30.732454 | 7.761709 | 0.000060 | 0.532783 | 463.428 | 182.154 | 434 | 90 |
 | H25 | 0.049986 | 0.000929 | 43.975384 | 11.876196 | -0.000038 | 0.516577 | 120.844 | 189.808 | 493 | 90 |
 
-### Table 5: LGBM All Plus SHAP Model - Validation Metrics
+### Table 5: LGBM SHAP-20 Model - Validation Metrics (COMPLETE)
+
+| Horizon | Weighted RMSE | Pearson | RMSE | MAE | R² | Directional Accuracy | MAPE | SMAPE | Best Iteration | Features Used |
+|---------|---------------|---------|------|-----|----|----------------------|------|-------|----------------|---------------|
+| H1 | 0.021190 | 0.029982 | 10.314629 | 2.363270 | 0.000358 | 0.548392 | 106.563 | 193.876 | 11 | 246 |
+| H3 | 0.034751 | 0.032966 | 17.415478 | 4.168008 | 0.001001 | 0.528852 | 104.119 | 196.164 | 13 | 246 |
+| H10 | 0.081124 | 0.086766 | 30.624843 | 7.715469 | 0.007051 | 0.524937 | 461.000 | 180.552 | 27 | 246 |
+| H25 | 0.065510 | 0.050180 | 43.950973 | 11.858488 | 0.001072 | 0.513940 | 111.201 | 189.364 | 32 | 246 |
+
+### Table 6: LGBM All Plus SHAP Model - Validation Metrics
 
 | Horizon | Weighted RMSE | Pearson | RMSE | MAE | R² | Directional Accuracy | MAPE | SMAPE | Best Iteration | Features Used |
 |---------|---------------|---------|------|-----|----|----------------------|------|-------|----------------|---------------|
@@ -55,7 +64,7 @@
 | H10 | 0.100659 | 0.067883 | 30.674324 | 7.728389 | 0.003839 | 0.583245 | 623.638 | 186.161 | 10 | 172 |
 | H25 | 0.031240 | 0.055174 | 43.966595 | 11.864213 | 0.000362 | 0.537631 | 107.004 | 191.693 | 4 | 172 |
 
-### Table 6: Baseline LGBM Model - Validation Metrics
+### Table 7: Baseline LGBM Model - Validation Metrics
 
 | Horizon | Weighted RMSE | Pearson | RMSE | MAE | R² | Directional Accuracy | MAPE | SMAPE | Best Iteration | Features Used |
 |---------|---------------|---------|------|-----|----|----------------------|------|-------|----------------|---------------|
@@ -123,8 +132,18 @@
 | LGBM BNN-Agg | 17 | 13 | 24 | 17 | 17.8 |
 | **LGBM SHAP-10 (11)** | **5** | 27 | **8** | **12.8** |
 | LGBM All+SHAP | 20 | 20 | 10 | 4 | 13.5 |
+| **LGBM SHAP-20** | 11 | 13 | 27 | 32 | 20.8 |
 | XGBoost SHAP-10 | N/A | N/A | N/A | N/A | N/A |
 | CatBoost SHAP-10 | 499 | 499 | 434 | 493 | 481.3 |
+
+### Table 12: Training Time Summary
+
+| Model | Total Training Time | Time per Horizon | Notes |
+|-------|-------------------|------------------|-------|
+| LGBM SHAP-20 | 8.21 minutes | ~2 minutes | 246 features, efficient convergence |
+| CatBoost SHAP-10 | ~45 minutes | ~11 minutes | 90 features, high iterations |
+| LGBM SHAP-10 | ~2 minutes | ~30 seconds | 90 features, fast convergence |
+| LGBM All+SHAP | ~3 minutes | ~45 seconds | 172 features, moderate speed |
 
 ### Table 12: Training Time Comparison
 

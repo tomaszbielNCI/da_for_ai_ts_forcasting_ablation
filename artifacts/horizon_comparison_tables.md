@@ -1,6 +1,6 @@
 # Horizon-by-Horizon Model Comparison
 
-Generated: 2026-04-19 21:09:22
+Generated: 2026-04-19 21:24:27
 
 ## Model Categories
 
@@ -24,6 +24,7 @@ Generated: 2026-04-19 21:09:22
 | trio_cat | Other | 0.056844 | -0.000557 | 11.664266 | 2.123347 | -0.000114 | 0.532194 | 210 | N/A |
 | trio_lgbm | Other | 0.137071 | 0.054292 | 11.656985 | 2.119204 | 0.001063 | 0.567445 | 14 | N/A |
 | trio_xgb | Other | **0.487503** | 0.042410 | 11.660930 | **2.109075** | 0.000487 | **0.657662** | 500 | N/A |
+| LGBM SHAP-20 | Shap Enhanced | 0.021190 | 0.029982 | 10.314613 | 2.363346 | 0.000278 | 0.540728 | 11 | 246 |
 | LGBM SHAP-10 | Shap Enhanced | 0.023494 | 0.031294 | 10.314202 | 2.363270 | 0.000358 | 0.548392 | 11 | 90 |
 | LGBM All+SHAP (Raw + SHAP-10 Engineered) | Shap Enhanced | 0.040688 | 0.032827 | 10.313374 | 2.360846 | 0.000518 | 0.558173 | 20 | 172 |
 | Trio XGBoost (Walk-Forward) | Walk Forward | 0.000000 | 0.009394 | 10.344079 | 2.272708 | -0.000033 | 0.507007 | 500 | N/A |
@@ -33,7 +34,7 @@ Generated: 2026-04-19 21:09:22
 **Key Insights for H1:**
 - Best Weighted RMSE: **trio_xgb** (0.487503)
 - Best Pearson: **Baseline LGBM (Main)** (0.063824)
-- Total models compared: 15
+- Total models compared: 16
 
 
 ### Horizon 3 - Model Comparison
@@ -51,6 +52,7 @@ Generated: 2026-04-19 21:09:22
 | trio_lgbm | Other | 0.063219 | 0.096074 | 19.303580 | 3.747969 | 0.001543 | 0.527073 | 4 | N/A |
 | trio_cat | Other | **0.137298** | 0.021803 | 19.324626 | 3.751557 | -0.000374 | 0.545719 | 400 | N/A |
 | LGBM SHAP-10 | Shap Enhanced | 0.024658 | 0.037832 | 17.415184 | 4.174031 | 0.001002 | 0.528852 | 5 | 90 |
+| LGBM SHAP-20 | Shap Enhanced | 0.034751 | 0.032966 | 17.416404 | 4.173038 | 0.000862 | 0.575080 | 13 | 246 |
 | LGBM All+SHAP (Raw + SHAP-10 Engineered) | Shap Enhanced | 0.073441 | 0.073177 | **17.385790** | 4.154755 | 0.004371 | 0.553912 | 20 | 172 |
 | Trio CatBoost (Walk-Forward) | Walk Forward | 0.000000 | 0.020830 | 17.483551 | 4.008797 | -0.000239 | 0.522321 | 499 | N/A |
 | Trio XGBoost (Walk-Forward) | Walk Forward | 0.000000 | 0.015019 | 17.485947 | 4.016025 | -0.000217 | 0.506762 | 500 | N/A |
@@ -59,7 +61,7 @@ Generated: 2026-04-19 21:09:22
 **Key Insights for H3:**
 - Best Weighted RMSE: **trio_cat** (0.137298)
 - Best Pearson: **trio_xgb** (0.157967)
-- Total models compared: 15
+- Total models compared: 16
 
 
 ### Horizon 10 - Model Comparison
@@ -77,6 +79,7 @@ Generated: 2026-04-19 21:09:22
 | trio_cat | Other | 0.135379 | 0.024905 | 33.739360 | 6.798781 | -0.001035 | 0.538874 | 348 | N/A |
 | trio_xgb | Other | **0.252331** | 0.158979 | 33.404350 | **6.672912** | **0.019512** | **0.594034** | 500 | N/A |
 | LGBM SHAP-10 | Shap Enhanced | 0.064984 | 0.084172 | 30.627956 | 7.723615 | 0.006849 | 0.522134 | 27 | 90 |
+| LGBM SHAP-20 | Shap Enhanced | 0.081124 | 0.086766 | 30.634990 | 7.717356 | 0.006392 | 0.543690 | 27 | 246 |
 | LGBM All+SHAP (Raw + SHAP-10 Engineered) | Shap Enhanced | 0.100659 | 0.067883 | 30.674324 | 7.728389 | 0.003839 | 0.583245 | 10 | 172 |
 | Trio CatBoost (Walk-Forward) | Walk Forward | 0.000000 | 0.026723 | 30.543617 | 7.443219 | -0.000865 | 0.527253 | 499 | N/A |
 | Trio XGBoost (Walk-Forward) | Walk Forward | 0.000000 | 0.031714 | 30.575285 | 7.469324 | -0.001651 | 0.510187 | 500 | N/A |
@@ -85,7 +88,7 @@ Generated: 2026-04-19 21:09:22
 **Key Insights for H10:**
 - Best Weighted RMSE: **trio_xgb** (0.252331)
 - Best Pearson: **trio_lgbm** (0.165948)
-- Total models compared: 15
+- Total models compared: 16
 
 
 ### Horizon 25 - Model Comparison
@@ -104,6 +107,7 @@ Generated: 2026-04-19 21:09:22
 | trio_xgb | Other | **0.770687** | **0.238360** | 51.656852 | **10.238879** | **0.024020** | **0.696276** | 500 | N/A |
 | LGBM All+SHAP (Raw + SHAP-10 Engineered) | Shap Enhanced | 0.031240 | 0.055174 | 43.966595 | 11.864213 | 0.000362 | 0.537631 | 4 | 172 |
 | LGBM SHAP-10 | Shap Enhanced | 0.049441 | 0.019258 | 43.966916 | 11.859075 | 0.000347 | 0.515783 | 8 | 90 |
+| LGBM SHAP-20 | Shap Enhanced | 0.065510 | 0.050180 | 43.929441 | 11.821206 | 0.002051 | 0.518796 | 32 | 246 |
 | Trio XGBoost (Walk-Forward) | Walk Forward | 0.000000 | 0.031569 | 45.728661 | 11.592935 | 0.000471 | 0.508810 | 500 | N/A |
 | Trio LGBM (Walk-Forward) | Walk Forward | 0.011522 | 0.053642 | 45.770547 | 11.568914 | -0.002733 | 0.510914 | 4 | N/A |
 | Trio CatBoost (Walk-Forward) | Walk Forward | 0.016821 | 0.003027 | 45.778625 | 11.572290 | -0.003177 | 0.501971 | 499 | N/A |
@@ -111,7 +115,7 @@ Generated: 2026-04-19 21:09:22
 **Key Insights for H25:**
 - Best Weighted RMSE: **trio_xgb** (0.770687)
 - Best Pearson: **trio_xgb** (0.238360)
-- Total models compared: 15
+- Total models compared: 16
 
 
 ## Overall Summary

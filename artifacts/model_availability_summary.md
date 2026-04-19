@@ -1,54 +1,42 @@
 # Model Availability Summary
 
-Generated: 2026-04-19 21:09:22
+Generated: 2026-04-19 21:24:27
 
 ## Baseline
-**Available: 3/3**
+Available: 3/3
 
-**Models:**
+Models:
 - Baseline LGBM (Raw Features)
 - Baseline LGBM (Main)
 - Baseline LGBM (Raw)
 
-## SHAP Enhanced
-**Available: 3/3**
+## Shap Enhanced
+Available: 3/3
 
-**Models:**
+Models:
 - LGBM SHAP-10
+- LGBM SHAP-20
 - LGBM All+SHAP (Raw + SHAP-10 Engineered)
-- LGBM SHAP-20 
 
-## BNN Enhanced
-**Available: 2/2**
+## Bnn Enhanced
+Available: 2/3
 
-**Models:**
+Models:
 - LGBM BNN-SHAP10
 - LGBM BNN-Aggregated
 
 ## Algorithm Variants
-**Available: 2/2**
+Available: 2/2
 
-**Models:**
+Models:
 - XGBoost SHAP-10
 - CatBoost SHAP-10
 
 ## Walk Forward
-**Available: 3/3**
+Available: 3/3
 
-**Models:**
+Models:
 - Trio CatBoost (Walk-Forward)
 - Trio LGBM (Walk-Forward)
 - Trio XGBoost (Walk-Forward)
-
-*Note: Walk-forward metrics averaged across 4 windows*
-
----
-
-## Summary
-- **Total models with metrics**: 13/13
-- **Total models with predictions**: 13/13
-- **Complete coverage**: All major model categories represented
-- **Missing metrics**: LGBM SHAP-20 (training in progress)
-- **BNN Enhanced**: Complete with both aggregated and SHAP10 variants
-- **Walk-forward available**: All 3 trio models with averaged metrics
 
