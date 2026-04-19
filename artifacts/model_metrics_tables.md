@@ -94,10 +94,10 @@
 
 | Horizon | Best Weighted RMSE | Best Pearson | Best RMSE | Best MAE | Best R² | Best Directional Accuracy |
 |---------|-------------------|--------------|-----------|----------|---------|---------------------------|
-| H1 | LGBM BNN-Agg (0.014189) | LGBM Baseline (0.052687) | LGBM BNN-Agg (10.312380) | LGBM BNN-Agg (2.357590) | LGBM Baseline (0.002879) | LGBM Baseline (0.548520) |
-| H3 | LGBM Baseline (0.027442) | LGBM BNN-Agg (0.031708) | LGBM Baseline (17.415736) | LGBM Baseline (4.168008) | LGBM BNN-Agg (0.001001) | LGBM Baseline (0.538295) |
-| H10 | LGBM Baseline (0.068652) | LGBM BNN-SHAP10 (0.086074) | LGBM BNN-SHAP10 (30.624843) | LGBM Baseline (7.699673) | LGBM BNN-SHAP10 (0.007051) | LGBM Baseline (0.528171) |
-| H25 | LGBM Baseline (0.062418) | LGBM BNN-SHAP10 (0.061738) | LGBM BNN-Agg (43.944959) | LGBM BNN-Agg (11.850605) | LGBM BNN-Agg (0.001346) | LGBM Baseline (0.516507) |
+| H1 | LGBM BNN-Agg (0.014189) | LGBM SHAP-10 (0.031294) | LGBM BNN-Agg (10.312380) | LGBM BNN-Agg (2.357590) | LGBM SHAP-10 (0.000358) | LGBM SHAP-10 (0.548392) |
+| H3 | LGBM SHAP-10 (0.024658) | LGBM BNN-Agg (0.031708) | LGBM SHAP-10 (17.415184) | LGBM SHAP-10 (4.174030) | LGBM BNN-Agg (0.001001) | LGBM SHAP-10 (0.528852) |
+| H10 | LGBM SHAP-10 (0.064984) | LGBM BNN-SHAP10 (0.086074) | LGBM BNN-SHAP10 (30.624843) | LGBM SHAP-10 (7.723615) | LGBM BNN-SHAP10 (0.007051) | LGBM SHAP-10 (0.522134) |
+| H25 | LGBM SHAP-10 (0.049441) | LGBM BNN-SHAP10 (0.061738) | LGBM BNN-Agg (43.944959) | LGBM BNN-Agg (11.850605) | LGBM BNN-Agg (0.001346) | LGBM SHAP-10 (0.515783) |
 
 ### Table 10: Feature Count Comparison
 
