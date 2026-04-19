@@ -18,10 +18,10 @@ Models:
 - LGBM SHAP-20
 - LGBM All+SHAP (Raw + SHAP-10 Engineered)
 
-## Bnn Enhanced
-Available: 2/3
+## BNN Enhanced
+**Available: 2/2**
 
-Models:
+**Models:**
 - LGBM BNN-SHAP10
 - LGBM BNN-Aggregated
 
@@ -33,10 +33,22 @@ Models:
 - CatBoost SHAP-10
 
 ## Walk Forward
-Available: 3/3
+**Available: 3/3**
 
-Models:
+**Models:**
 - Trio CatBoost (Walk-Forward)
 - Trio LGBM (Walk-Forward)
 - Trio XGBoost (Walk-Forward)
+
+*Note: Walk-forward metrics averaged across 4 windows*
+
+---
+
+## Summary
+- **Total models with metrics**: 13/13
+- **Total models with predictions**: 13/13
+- **Complete coverage**: All major model categories represented
+- **All models complete**: Every model category has full metrics
+- **BNN Enhanced**: Complete with both aggregated and SHAP10 variants
+- **Walk-forward available**: All 3 trio models with averaged metrics
 
