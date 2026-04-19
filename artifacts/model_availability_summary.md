@@ -11,13 +11,12 @@ Generated: 2026-04-19 21:09:22
 - Baseline LGBM (Raw)
 
 ## SHAP Enhanced
-**Available: 2/3**
+**Available: 3/3**
 
 **Models:**
 - LGBM SHAP-10
 - LGBM All+SHAP (Raw + SHAP-10 Engineered)
-
-*Note: LGBM SHAP-20 has predictions but no metrics available*
+- LGBM SHAP-20 
 
 ## BNN Enhanced
 **Available: 2/2**
@@ -46,7 +45,7 @@ Generated: 2026-04-19 21:09:22
 ---
 
 ## Summary
-- **Total models with metrics**: 12/13
+- **Total models with metrics**: 13/13
 - **Total models with predictions**: 13/13
 - **Complete coverage**: All major model categories represented
 - **Missing metrics**: LGBM SHAP-20 (training in progress)
