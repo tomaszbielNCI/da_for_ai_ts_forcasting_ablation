@@ -26,7 +26,10 @@ class HorizonComparisonAnalyzer:
         # Clear model naming mapping
         self.model_names = {
             'lgbm_baseline': 'Baseline LGBM (Raw Features)',
+            'baseline_lgbm': 'Baseline LGBM (Main)',
+            'baseline_lgbm_raw': 'Baseline LGBM (Raw)',
             'lgbm_shap_10': 'LGBM SHAP-10',
+            'lgbm_shap_20': 'LGBM SHAP-20',
             'lgbm_all_plus_shap': 'LGBM All+SHAP (Raw + SHAP-10 Engineered)',
             'lgbm_bnn-shap10': 'LGBM BNN-SHAP10',
             'lgbm_bnn-aggregated': 'LGBM BNN-Aggregated',
@@ -34,14 +37,15 @@ class HorizonComparisonAnalyzer:
             'catboost_shap_10': 'CatBoost SHAP-10',
             'trio_lgbm': 'Trio LGBM (Walk-Forward)',
             'trio_xgb': 'Trio XGBoost (Walk-Forward)',
-            'trio_catboost': 'Trio CatBoost (Walk-Forward)'
+            'trio_catboost': 'Trio CatBoost (Walk-Forward)',
+            'lgbm_with_bnn': 'LGBM with BNN Features'
         }
         
         # Model categories for organization
         self.model_categories = {
-            'baseline': ['lgbm_baseline'],
-            'shap_enhanced': ['lgbm_shap_10', 'lgbm_all_plus_shap'],
-            'bnn_enhanced': ['lgbm_bnn-shap10', 'lgbm_bnn-aggregated'],
+            'baseline': ['lgbm_baseline', 'baseline_lgbm', 'baseline_lgbm_raw'],
+            'shap_enhanced': ['lgbm_shap_10', 'lgbm_shap_20', 'lgbm_all_plus_shap'],
+            'bnn_enhanced': ['lgbm_bnn-shap10', 'lgbm_bnn-aggregated', 'lgbm_with_bnn'],
             'algorithm_variants': ['xgb_shap_10', 'catboost_shap_10'],
             'walk_forward': ['trio_lgbm', 'trio_xgb', 'trio_catboost']
         }
