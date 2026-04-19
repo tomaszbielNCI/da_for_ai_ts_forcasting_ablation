@@ -50,10 +50,10 @@
 
 | Horizon | Weighted RMSE | Pearson | RMSE | MAE | R² | Directional Accuracy | MAPE | SMAPE | Best Iteration | Features Used |
 |---------|---------------|---------|------|-----|----|----------------------|------|-------|----------------|---------------|
-| H1 | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H3 | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H10 | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H25 | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
+| H1 | 0.040688 | 0.032827 | 10.313374 | 2.360846 | 0.000518 | 0.558173 | 127.553 | 188.530 | 20 | 172 |
+| H3 | 0.073441 | 0.073177 | 17.385790 | 4.154755 | 0.004371 | 0.553912 | 121.065 | 186.045 | 20 | 172 |
+| H10 | 0.100659 | 0.067883 | 30.674324 | 7.728389 | 0.003839 | 0.583245 | 623.638 | 186.161 | 10 | 172 |
+| H25 | 0.031240 | 0.055174 | 43.966595 | 11.864213 | 0.000362 | 0.537631 | 107.004 | 191.693 | 4 | 172 |
 
 ### Table 6: Baseline LGBM Model - Validation Metrics
 
@@ -100,7 +100,7 @@
 | H1 | **LGBM BNN-Agg (0.014189)** | LGBM SHAP-10 (0.031294) | **LGBM BNN-Agg (10.312380)** | **LGBM BNN-Agg (2.357590)** | LGBM SHAP-10 (0.000358) | **LGBM SHAP-10 (0.548392)** |
 | H3 | **LGBM SHAP-10 (0.024658)** | **LGBM BNN-Agg (0.031708)** | **LGBM SHAP-10 (17.415184)** | **LGBM SHAP-10 (4.174030)** | **LGBM BNN-Agg (0.001001)** | **LGBM SHAP-10 (0.528852)** |
 | H10 | **LGBM SHAP-10 (0.064984)** | **LGBM BNN-SHAP10 (0.086074)** | **LGBM BNN-SHAP10 (30.624843)** | **LGBM SHAP-10 (7.723615)** | **LGBM BNN-SHAP10 (0.007051)** | **LGBM SHAP-10 (0.522134)** |
-| H25 | **LGBM SHAP-10 (0.049441)** | **LGBM BNN-SHAP10 (0.061738)** | LGBM BNN-Agg (43.944959) | LGBM BNN-Agg (11.850605) | **LGBM BNN-Agg (0.001346)** | **LGBM SHAP-10 (0.515783)** |
+| H25 | **LGBM All+SHAP (0.031240)** | **LGBM BNN-SHAP10 (0.061738)** | **LGBM All+SHAP (43.966595)** | LGBM BNN-Agg (11.850605) | **LGBM BNN-Agg (0.001346)** | **LGBM SHAP-10 (0.515783)** |
 
 ### Table 10: Feature Count Comparison
 
@@ -110,6 +110,7 @@
 | LGBM BNN-SHAP10 | 12 | 12 | 12 | 12 | 12.0 |
 | LGBM BNN-Agg | 12 | 12 | 12 | 12 | 12.0 |
 | LGBM SHAP-10 | 90 | 90 | 90 | 90 | 90.0 |
+| LGBM All+SHAP | 172 | 172 | 172 | 172 | 172.0 |
 | XGBoost SHAP-10 | 90 | 90 | 90 | 90 | 90.0 |
 | CatBoost SHAP-10 | 90 | 90 | 90 | 90 | 90.0 |
 
@@ -121,6 +122,7 @@
 | LGBM BNN-SHAP10 | 11 | 11 | 58 | 13 | 23.3 |
 | LGBM BNN-Agg | 17 | 13 | 24 | 17 | 17.8 |
 | **LGBM SHAP-10 (11)** | **5** | 27 | **8** | **12.8** |
+| LGBM All+SHAP | 20 | 20 | 10 | 4 | 13.5 |
 | XGBoost SHAP-10 | N/A | N/A | N/A | N/A | N/A |
 | CatBoost SHAP-10 | 499 | 499 | 434 | 493 | 481.3 |
 
