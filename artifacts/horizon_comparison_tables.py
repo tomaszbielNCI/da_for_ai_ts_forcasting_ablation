@@ -35,9 +35,9 @@ class HorizonComparisonAnalyzer:
             'lgbm_bnn-aggregated': 'LGBM BNN-Aggregated',
             'xgb_shap_10': 'XGBoost SHAP-10',
             'catboost_shap_10': 'CatBoost SHAP-10',
-            'trio_lgbm': 'Trio LGBM (Walk-Forward)',
-            'trio_xgb': 'Trio XGBoost (Walk-Forward)',
-            'trio_catboost': 'Trio CatBoost (Walk-Forward)',
+            'cat': 'Trio CatBoost (Walk-Forward)',
+            'lgbm': 'Trio LGBM (Walk-Forward)',
+            'xgb': 'Trio XGBoost (Walk-Forward)',
             'lgbm_with_bnn': 'LGBM with BNN Features'
         }
         
@@ -47,13 +47,14 @@ class HorizonComparisonAnalyzer:
             'shap_enhanced': ['lgbm_shap_10', 'lgbm_shap_20', 'lgbm_all_plus_shap'],
             'bnn_enhanced': ['lgbm_bnn-shap10', 'lgbm_bnn-aggregated', 'lgbm_with_bnn'],
             'algorithm_variants': ['xgb_shap_10', 'catboost_shap_10'],
-            'walk_forward': ['trio_lgbm', 'trio_xgb', 'trio_catboost']
+            'walk_forward': ['cat', 'lgbm', 'xgb']
         }
     
     def load_all_metrics(self) -> Dict:
         """Load all available metrics"""
         all_metrics = {}
         
+        # Load regular metrics
         for json_file in self.metrics_dir.glob('metrics_h*.json'):
             try:
                 with open(json_file, 'r') as f:
@@ -69,6 +70,28 @@ class HorizonComparisonAnalyzer:
                     all_metrics[key] = data
             except Exception as e:
                 print(f"Error loading {json_file}: {e}")
+        
+        # Load walk-forward metrics (average across windows)
+        for json_file in self.metrics_dir.glob('metrics_wf_h*.json'):
+            try:
+                with open(json_file, 'r') as f:
+                    data = json.load(f)
+                    horizon = data['horizon']
+                    model = data['model']
+                    
+                    key = f"h{horizon}_{model}"
+                    
+                    # If we already have this model/horizon, average the metrics
+                    if key in all_metrics:
+                        existing = all_metrics[key]
+                        # Average the validation metrics
+                        for metric in ['weighted_rmse', 'pearson', 'rmse', 'mae', 'r2', 'directional_accuracy']:
+                            if metric in existing.get('valid', {}) and metric in data.get('valid', {}):
+                                existing['valid'][metric] = (existing['valid'][metric] + data['valid'][metric]) / 2
+                    else:
+                        all_metrics[key] = data
+            except Exception as e:
+                print(f"Error loading walk-forward {json_file}: {e}")
                 
         return all_metrics
     
