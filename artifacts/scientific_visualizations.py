@@ -39,36 +39,43 @@ class ScientificVisualizationGenerator:
         
         # Model naming for plots
         self.model_names = {
+            'baseline_lgbm': 'Baseline LGBM (Main)',
+            'baseline_lgbm_raw': 'Baseline LGBM (Raw)',
             'lgbm_baseline': 'Baseline LGBM',
-            'lgbm_shap_10': 'LGBM SHAP-10',
+            'lgbm_shap_10': 'LGBM SHAP-10 (BEST)',
+            'lgbm_shap_20': 'LGBM SHAP-20',
             'lgbm_all_plus_shap': 'LGBM All+SHAP',
             'lgbm_bnn-shap10': 'LGBM BNN-SHAP10',
             'lgbm_bnn-aggregated': 'LGBM BNN-Aggregated',
             'xgb_shap_10': 'XGBoost SHAP-10',
             'catboost_shap_10': 'CatBoost SHAP-10',
-            'trio_lgbm': 'Trio LGBM (WF)',
-            'trio_xgb': 'Trio XGBoost (WF)',
-            'trio_catboost': 'Trio CatBoost (WF)'
+            'cat': 'Trio CatBoost (WF)',
+            'lgbm': 'Trio LGBM (WF)',
+            'xgb': 'Trio XGBoost (WF)'
         }
         
-        # Color palette for models
+        # Color palette for models - highlight LGBM SHAP-10 as best
         self.colors = {
+            'baseline_lgbm': '#1f77b4',
+            'baseline_lgbm_raw': '#1f77b4',
             'lgbm_baseline': '#1f77b4',
-            'lgbm_shap_10': '#ff7f0e',
+            'lgbm_shap_10': '#FF6B35',  # Bright orange for best model
+            'lgbm_shap_20': '#2ca02c',
             'lgbm_all_plus_shap': '#2ca02c',
             'lgbm_bnn-shap10': '#d62728',
             'lgbm_bnn-aggregated': '#9467bd',
             'xgb_shap_10': '#8c564b',
             'catboost_shap_10': '#e377c2',
-            'trio_lgbm': '#7f7f7f',
-            'trio_xgb': '#bcbd22',
-            'trio_catboost': '#17becf'
+            'cat': '#7f7f7f',
+            'lgbm': '#7f7f7f',
+            'xgb': '#7f7f7f'
         }
     
     def load_all_metrics(self) -> Dict:
-        """Load all available metrics"""
+        """Load all available metrics including walk-forward"""
         all_metrics = {}
         
+        # Load regular metrics
         for json_file in self.metrics_dir.glob('metrics_h*.json'):
             try:
                 with open(json_file, 'r') as f:
@@ -76,7 +83,7 @@ class ScientificVisualizationGenerator:
                     horizon = data['horizon']
                     model = data['model']
                     
-                    # Skip walk-forward window files
+                    # Skip walk-forward window files for now
                     if 'Window' in json_file.name:
                         continue
                     
@@ -84,6 +91,36 @@ class ScientificVisualizationGenerator:
                     all_metrics[key] = data
             except Exception as e:
                 print(f"Error loading {json_file}: {e}")
+        
+        # Load walk-forward metrics (average across windows)
+        wf_models = {}
+        for json_file in self.metrics_dir.glob('metrics_wf_h*.json'):
+            try:
+                with open(json_file, 'r') as f:
+                    data = json.load(f)
+                    horizon = data['horizon']
+                    model = data['model']
+                    
+                    key = f"h{horizon}_{model}"
+                    
+                    # Average across windows
+                    if key not in wf_models:
+                        wf_models[key] = []
+                    wf_models[key].append(data)
+            except Exception as e:
+                print(f"Error loading walk-forward {json_file}: {e}")
+        
+        # Add averaged walk-forward metrics
+        for key, model_data_list in wf_models.items():
+            if len(model_data_list) > 0:
+                # Average the validation metrics
+                avg_data = model_data_list[0].copy()
+                for metric in ['weighted_rmse', 'pearson', 'rmse', 'mae', 'r2', 'directional_accuracy']:
+                    if metric in avg_data.get('valid', {}):
+                        values = [d['valid'].get(metric, 0) for d in model_data_list]
+                        avg_data['valid'][metric] = sum(values) / len(values)
+                
+                all_metrics[key] = avg_data
                 
         return all_metrics
     
