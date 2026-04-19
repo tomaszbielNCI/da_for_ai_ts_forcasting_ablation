@@ -173,3 +173,25 @@ tmp/
 
 # Debug files
 debug_*.py
+
+# Large submission files
+*.zip
+*_submission*.zip
+nci_submission*.zip
+
+# CatBoost training artifacts
+catboost_info/
+*.catboost
+
+# Model training logs and events
+events.out.tfevents
+*.tsv
+
+# Essential files backup
+nci_essential_files/
+
+# Temporary notebooks
+notebooks/mamba*.ipynb
+
+# Fix scripts
+fix_*.py

@@ -11,9 +11,9 @@ import sys
 # Add src to path
 sys.path.append(str(Path(__file__).parent))
 
-from .lgbm_shap_10 import LGBM_SHAP_10
-from .xgb_model import XGBoostModel
-from .catboost_model import CatBoostModel
+from lgbm_shap_10 import LGBM_SHAP_10
+from xgb_model import XGBoostModel
+from catboost_model import CatBoostModel
 
 
 def run_all_models():

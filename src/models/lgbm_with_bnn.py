@@ -385,7 +385,12 @@ class LGBMWithBNN:
             all_ids.extend(ids)
 
             # Get predictions
-            suffix = f"_{variant}" if variant != 'baseline' else "_baseline"
+            if variant == 'bnn_shap10':
+                suffix = "_shap10"
+            elif variant == 'bnn_aggregated': 
+                suffix = "_aggregated"
+            else:
+                suffix = "_baseline"
             pred_path = self.predictions_dir / f'lgbm_h{horizon}{suffix}_predictions.npz'
 
             if pred_path.exists():
