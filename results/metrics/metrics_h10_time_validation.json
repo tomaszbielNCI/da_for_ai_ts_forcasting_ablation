@@ -1,0 +1,30 @@
+{
+  "horizon": 10,
+  "model": "baseline_lgbm",
+  "validation_type": "time_validation",
+  "timestamp": "2026-04-19T09:28:13.742054",
+  "train": {
+    "rmse": 33.16584174378659,
+    "mae": 6.3921724038035705,
+    "mape": 166.7998139157871,
+    "smape": 165.71494225019387,
+    "weighted_rmse": 0.3387276411363239,
+    "pearson": 0.3663305944521098,
+    "r2": 0.07735051729344422,
+    "directional_accuracy": 0.5436616220734993,
+    "weighted_mape": 148.94467986422518
+  },
+  "valid": {
+    "rmse": 30.5754157055035,
+    "mae": 7.699673303110782,
+    "mape": 1855.3100783539783,
+    "smape": 170.85830434479755,
+    "weighted_rmse": 0.0,
+    "pearson": 0.10350155227857712,
+    "r2": 0.01025302637895642,
+    "directional_accuracy": 0.5281707247949343,
+    "weighted_mape": 139.6841514207411
+  },
+  "training_time_seconds": 58.30321645736694,
+  "features_used": 86
+}

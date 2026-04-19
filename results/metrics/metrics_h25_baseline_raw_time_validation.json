@@ -1,0 +1,37 @@
+{
+  "horizon": 25,
+  "model": "baseline_lgbm_raw",
+  "validation_type": "time_validation",
+  "timestamp": "2026-04-19T09:40:37.593495",
+  "train": {
+    "rmse": 52.09033013931928,
+    "mae": 10.758620418135823,
+    "mape": 144.32033319346874,
+    "smape": 175.1052442340891,
+    "weighted_rmse": 0.20091722702706816,
+    "pearson": 0.2670031994096784,
+    "r2": 0.027557700089006043,
+    "directional_accuracy": 0.5347956982450041,
+    "weighted_mape": 165.03686525498898,
+    "y_mean_diff": 0.9709819447672651,
+    "y_std_ratio": 0.058688243015249726,
+    "y_range_coverage": 0.015051426313234428
+  },
+  "valid": {
+    "rmse": 43.69844274174976,
+    "mae": 11.769044871745665,
+    "mape": 140.07268221351367,
+    "smape": 177.5558462600294,
+    "weighted_rmse": 0.10543831039637964,
+    "pearson": 0.12555143692060686,
+    "r2": 0.01251842646982615,
+    "directional_accuracy": 0.5233562562898356,
+    "weighted_mape": 125.02914511156402,
+    "y_mean_diff": -0.5293600013108852,
+    "y_std_ratio": 0.06987535121138723,
+    "y_range_coverage": 0.06689270395964755
+  },
+  "training_time_seconds": 0,
+  "features_used": 86,
+  "best_iteration": 28
+}

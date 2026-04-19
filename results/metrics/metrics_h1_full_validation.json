@@ -1,0 +1,20 @@
+{
+  "horizon": 1,
+  "model": "baseline_lgbm",
+  "validation_type": "full_validation",
+  "timestamp": "2026-04-19T09:23:09.602004",
+  "train": {
+    "rmse": 11.63642418602278,
+    "mae": 2.1179716105830977,
+    "mape": 144.38916446562885,
+    "smape": 181.32548554930582,
+    "weighted_rmse": 0.2592474460071153,
+    "pearson": 0.15537822483689098,
+    "r2": 0.010784238248477518,
+    "directional_accuracy": 0.5896640522725707,
+    "weighted_mape": 143.42713916709735
+  },
+  "training_time_seconds": 67.38558554649353,
+  "features_used": 86,
+  "test_samples": 379617
+}

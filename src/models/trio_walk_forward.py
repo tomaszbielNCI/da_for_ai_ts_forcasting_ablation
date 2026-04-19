@@ -212,11 +212,19 @@ class WalkForwardTrio:
                    'ts_index', 'y_target', 'weight']
         return [c for c in df.columns if c not in exclude]
 
-    def prepare_data(self, df: pl.DataFrame, feature_cols: List[str]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def prepare_data(self, df: pl.DataFrame, feature_cols: List[str], is_test: bool = False) -> Tuple[
+        np.ndarray, np.ndarray, np.ndarray]:
         """Prepare data for training/prediction."""
         X = df.select(feature_cols).to_numpy()
-        y = df['y_target'].to_numpy().ravel()
-        w = df['weight'].to_numpy().ravel()
+
+        if is_test:
+            # Test data doesn't have y_target and weight
+            y = np.zeros(len(X))
+            w = np.ones(len(X))
+        else:
+            y = df['y_target'].to_numpy().ravel()
+            w = df['weight'].to_numpy().ravel()
+
         return X, y, w
 
     def train_lgbm_window(self, horizon: int, window: Dict, w_idx: int,
@@ -335,11 +343,13 @@ class WalkForwardTrio:
 
         feature_cols = self.get_feature_columns(train_split)
 
-        X_train, y_train, w_train = self.prepare_data(train_split, feature_cols)
-        X_valid, y_valid, w_valid = self.prepare_data(valid_split, feature_cols)
+        # Prepare data - train and valid need y_target
+        X_train, y_train, w_train = self.prepare_data(train_split, feature_cols, is_test=False)
+        X_valid, y_valid, w_valid = self.prepare_data(valid_split, feature_cols, is_test=False)
 
+        # Prepare test data - NO y_target
         test_df = pl.read_parquet(self.processed_dir / f'test_h{horizon}_engineered.parquet')
-        X_test, _, _ = self.prepare_data(test_df, feature_cols)
+        X_test, _, _ = self.prepare_data(test_df, feature_cols, is_test=True)
 
         # Train all three models
         lgbm_res = self.train_lgbm_window(horizon, window, w_idx, X_train, y_train, w_train, X_valid, y_valid, w_valid,
