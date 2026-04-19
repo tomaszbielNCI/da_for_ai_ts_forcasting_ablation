@@ -1,6 +1,6 @@
 # Horizon-by-Horizon Model Comparison
 
-Generated: 2026-04-19 20:14:01
+Generated: 2026-04-19 20:33:08
 
 ## Model Categories
 
@@ -84,6 +84,7 @@ Generated: 2026-04-19 20:14:01
 | Model | Category | Weighted RMSE | Pearson | RMSE | MAE | R² | Dir. Acc. | Iter. | Features |
 |-------|----------|---------------|---------|------|-----|----|-----------|-------|----------|
 | XGBoost SHAP-10 | Algorithm Variants | **0.000000** | -0.007776 | 44.147363 | 11.904637 | -0.007875 | 0.511075 | N/A | 90 |
+| CatBoost SHAP-10 | Algorithm Variants | 0.049986 | 0.000929 | 43.975384 | 11.876196 | -0.000038 | 0.516577 | 493 | 90 |
 | Baseline LGBM (Raw Features) | Baseline | 0.062418 | 0.045877 | 43.942055 | 11.849889 | 0.001478 | 0.516700 | 16 | 10 |
 | LGBM BNN-SHAP10 | Bnn Enhanced | 0.067594 | 0.061738 | 43.950973 | 11.858488 | 0.001072 | 0.513940 | 13 | 12 |
 | LGBM BNN-Aggregated | Bnn Enhanced | 0.072204 | 0.041381 | 43.944959 | 11.850605 | 0.001346 | 0.512662 | 17 | 12 |
@@ -98,7 +99,7 @@ Generated: 2026-04-19 20:14:01
 **Key Insights for H25:**
 - Best Weighted RMSE: **XGBoost SHAP-10** (0.000000)
 - Best Pearson: **Trio XGBoost (Walk-Forward)** (0.238360)
-- Total models compared: 11
+- Total models compared: 12
 
 
 ## Overall Summary
