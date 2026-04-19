@@ -152,9 +152,30 @@ Thumbs.db
 # Data directories
 data/
 downloaded_data/
-results/
 logs/
-artifacts/
+
+# Results - exclude large files but keep JSON metrics
+results/**/*.csv
+results/**/*.npz
+results/**/*.pkl
+results/**/*.parquet
+results/**/*.feather
+results/**/*.h5
+results/**/*.hdf5
+results/**/*.zip
+!results/**/*.json
+
+# Artifacts - keep for documentation but exclude large files
+artifacts/**/*.csv
+artifacts/**/*.npz
+artifacts/**/*.pkl
+artifacts/**/*.parquet
+artifacts/**/*.feather
+artifacts/**/*.h5
+artifacts/**/*.hdf5
+artifacts/**/*.zip
+!artifacts/**/*.md
+!artifacts/**/*.json
 
 # Model files
 *.pkl
