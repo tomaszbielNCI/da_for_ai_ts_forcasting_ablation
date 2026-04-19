@@ -172,11 +172,11 @@ class HorizonComparisonAnalyzer:
         metrics_to_bold = ['Weighted RMSE', 'Pearson', 'RMSE', 'MAE', 'R²', 'Directional Accuracy']
         
         for metric in metrics_to_bold:
-            if metric in ['Weighted RMSE', 'RMSE', 'MAE']:
+            if metric in ['RMSE', 'MAE']:
                 # Lower is better
                 best_metrics[metric] = df[metric].min()
             else:
-                # Higher is better
+                # Higher is better (Weighted RMSE, Pearson, R², Directional Accuracy)
                 best_metrics[metric] = df[metric].max()
         
         # Format table
@@ -212,11 +212,11 @@ class HorizonComparisonAnalyzer:
         table_lines.append("")
         
         # Add insights
-        best_model = df.loc[df['Weighted RMSE'].idxmin(), 'Model']
+        best_model = df.loc[df['Weighted RMSE'].idxmax(), 'Model']
         best_pearson = df.loc[df['Pearson'].idxmax(), 'Model']
         
         insights = f"**Key Insights for H{horizon}:**\n"
-        insights += f"- Best Weighted RMSE: **{best_model}** ({df['Weighted RMSE'].min():.6f})\n"
+        insights += f"- Best Weighted RMSE: **{best_model}** ({df['Weighted RMSE'].max():.6f})\n"
         insights += f"- Best Pearson: **{best_pearson}** ({df['Pearson'].max():.6f})\n"
         insights += f"- Total models compared: {len(df)}\n"
         
@@ -260,8 +260,8 @@ class HorizonComparisonAnalyzer:
         summary_data = []
         for horizon in self.horizons:
             df = self.create_horizon_table(horizon)
-            best_model = df.loc[df['Weighted RMSE'].idxmin(), 'Model']
-            best_score = df['Weighted RMSE'].min()
+            best_model = df.loc[df['Weighted RMSE'].idxmax(), 'Model']
+            best_score = df['Weighted RMSE'].max()
             summary_data.append({
                 'Horizon': f'H{horizon}',
                 'Best Model': best_model,
@@ -280,8 +280,8 @@ class HorizonComparisonAnalyzer:
         all_tables.append("")
         
         # Overall best model
-        overall_best = summary_df.loc[summary_df['Best Weighted RMSE'].idxmin(), 'Best Model']
-        overall_score = summary_df['Best Weighted RMSE'].min()
+        overall_best = summary_df.loc[summary_df['Best Weighted RMSE'].idxmax(), 'Best Model']
+        overall_score = summary_df['Best Weighted RMSE'].max()
         
         all_tables.append(f"### Overall Best Performance")
         all_tables.append("")
