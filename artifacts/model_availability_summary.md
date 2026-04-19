@@ -48,9 +48,10 @@ Generated: 2026-04-19 21:09:22
 ---
 
 ## Summary
-- **Total models with metrics**: 12/14
-- **Total models with predictions**: 12/14
+- **Total models with metrics**: 12/13
+- **Total models with predictions**: 13/13
 - **Complete coverage**: All major model categories represented
-- **Missing metrics**: LGBM SHAP-20, LGBM with BNN
+- **Missing metrics**: LGBM SHAP-20 (predictions available, no metrics)
+- **BNN structure**: Correctly split into aggregated and SHAP10 variants
 - **Walk-forward available**: All 3 trio models with averaged metrics
 
