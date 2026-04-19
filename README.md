@@ -115,6 +115,8 @@ da_for_ai_ts_forcasting_ablation/
 - **CRISP-DM methodology application**
 - **Multiple evaluation metrics** (Weighted RMSE, Pearson, R², Directional Accuracy)
 
+**Important Note**: Weighted RMSE uses a special formula where higher values indicate better performance (0.000000 = worst performance, higher values = better accuracy)
+
 ### Presentation Requirements
 - **10 minutes maximum**, 7 slides (30% of learning outcomes)
 - **Methodology overview** and key findings
@@ -140,9 +142,11 @@ da_for_ai_ts_forcasting_ablation/
 - **H10**: LGBM SHAP-10 (Weighted RMSE: 0.064984)
 - **H25**: LGBM All+SHAP (Weighted RMSE: 0.031240)
 
+**Note**: For Weighted RMSE, higher values indicate better performance (0.000000 = worst, higher = better)
+
 #### CatBoost SHAP-10 Complete Results
 - **H1**: Weighted RMSE: 0.018325, Pearson: 0.004171, Iter: 499
-- **H3**: Weighted RMSE: 0.000000, Pearson: 0.009263, Iter: 499
+- **H3**: Weighted RMSE: 0.000000 (worst), Pearson: 0.009263, Iter: 499
 - **H10**: Weighted RMSE: 0.047505, Pearson: 0.014024, Iter: 434
 - **H25**: Weighted RMSE: 0.049986, Pearson: 0.000929, Iter: 493
 

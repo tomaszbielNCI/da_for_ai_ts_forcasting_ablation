@@ -9,11 +9,12 @@ This document provides comprehensive scientific guidance on metrics, evaluation 
 **Why it's important:**
 - The official Kaggle metric for this competition
 - Accounts for different weights across time periods and horizons
-- Penalizes larger errors more heavily due to squaring
-- Standard in financial forecasting where large errors have significant impact
+- Uses special formula where higher values indicate better performance
+- Standard in financial forecasting with unique scoring system
 
 **Interpretation:**
-- Lower values indicate better performance
+- **Higher values indicate better performance** (unlike standard RMSE)
+- **0.000000 = worst possible performance** (no predictive ability)
 - Values typically range from 0.01 to 0.10 for financial time series
 - Sensitive to outliers and extreme predictions
 
