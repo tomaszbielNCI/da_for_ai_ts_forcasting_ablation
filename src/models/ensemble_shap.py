@@ -4,24 +4,28 @@ Ensemble SHAP Models - With Kaggle Results Comparison
 
 Creates weighted ensemble from saved SHAP-10 and SHAP-20 predictions.
 Displays final comparison table for report.
+Saves metrics to JSON and CSV files.
 """
 
 import polars as pl
 import numpy as np
 import logging
+import json
 from pathlib import Path
 from datetime import datetime
+from typing import Dict, Tuple, Optional, List
 
 # Add src to path
 import sys
 
 sys.path.append(str(Path(__file__).parent.parent))
-from src.metrics.evaluation import TimeSeriesMetrics
+from src.metrics.evaluation import TimeSeriesMetrics, MetricResults
 
 
 class EnsembleWithKaggleComparison:
     """
     Ensemble combining SHAP-10 and SHAP-20 with Kaggle results comparison.
+    Saves metrics to JSON and CSV files.
     """
 
     def __init__(self):
@@ -32,7 +36,11 @@ class EnsembleWithKaggleComparison:
         self.shap10_dir = project_root / 'results/predictions/lgbm_shap_10'
         self.shap20_dir = project_root / 'results/predictions/lgbm_shap_20'
         self.output_dir = project_root / 'results/predictions/ensemble'
-        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.metrics_dir = project_root / 'results/metrics'
+
+        # Create directories
+        for dir_path in [self.output_dir, self.metrics_dir]:
+            dir_path.mkdir(parents=True, exist_ok=True)
 
         # Load engineered data for validation
         self.processed_dir = project_root / 'data/processed/top_10'
@@ -52,7 +60,7 @@ class EnsembleWithKaggleComparison:
         self.valid_start = 3001
         self.valid_end = 3600
 
-    def load_validation_data(self, horizon: int) -> tuple:
+    def load_validation_data(self, horizon: int) -> Tuple[np.ndarray, np.ndarray]:
         """Load validation data for metrics calculation."""
         train_path = self.processed_dir / f'train_h{horizon}_engineered.parquet'
         train_df = pl.read_parquet(train_path)
@@ -67,7 +75,7 @@ class EnsembleWithKaggleComparison:
 
         return y_true, weights
 
-    def load_predictions(self) -> tuple:
+    def load_predictions(self) -> Tuple[Dict, Dict, Dict, Dict]:
         """Load test and validation predictions."""
         shap10_preds = {}
         shap20_preds = {}
@@ -100,17 +108,21 @@ class EnsembleWithKaggleComparison:
 
         return shap10_preds, shap20_preds, shap10_valid, shap20_valid
 
-    def compute_metrics(self, y_true: np.ndarray, y_pred: np.ndarray, weights: np.ndarray) -> dict:
-        """Compute metrics using TimeSeriesMetrics."""
+    def compute_metrics(self, y_true: np.ndarray, y_pred: np.ndarray, weights: np.ndarray) -> Dict[str, float]:
+        """Compute all metrics using TimeSeriesMetrics."""
         metrics = TimeSeriesMetrics.evaluate_all(y_true, y_pred, weights, y_train=y_true)
         return {
             'weighted_rmse': metrics.weighted_rmse,
             'pearson': metrics.pearson,
             'rmse': metrics.rmse,
-            'r2': metrics.r2
+            'mae': metrics.mae,
+            'mape': metrics.mape,
+            'smape': metrics.smape,
+            'r2': metrics.r2,
+            'directional_accuracy': metrics.directional_accuracy
         }
 
-    def create_ensemble(self, shap10_preds: dict, shap20_preds: dict) -> dict:
+    def create_ensemble(self, shap10_preds: Dict, shap20_preds: Dict) -> Dict:
         """Create weighted ensemble predictions."""
         ensemble_preds = {}
 
@@ -121,15 +133,44 @@ class EnsembleWithKaggleComparison:
 
         return ensemble_preds
 
-    def compare_validation_metrics(self, shap10_valid: dict, shap20_valid: dict,
-                                   ensemble_valid: dict) -> None:
-        """Compare models on validation data."""
-        print(f"\n{'=' * 100}")
-        print("VALIDATION METRICS COMPARISON")
-        print(f"{'=' * 100}")
+    def _save_metrics(self, horizon: int, model_name: str,
+                      metrics_dict: Dict[str, float]) -> None:
+        """Save metrics to JSON and CSV files."""
+        metrics_data = {
+            'horizon': horizon,
+            'model': model_name,
+            'timestamp': datetime.now().isoformat(),
+            **metrics_dict
+        }
 
-        print(f"\n{'Horizon':<8} {'Model':<12} {'Weighted RMSE':<15} {'Pearson':<12} {'RMSE':<12} {'R²':<10}")
-        print("-" * 80)
+        # Save JSON
+        json_path = self.metrics_dir / f'metrics_h{horizon}_{model_name}.json'
+        with open(json_path, 'w') as f:
+            json.dump(metrics_data, f, indent=2)
+
+        # Save CSV (appends to single file)
+        csv_path = self.metrics_dir / 'all_metrics_ensemble.csv'
+        file_exists = csv_path.exists()
+
+        with open(csv_path, 'a') as f:
+            if not file_exists:
+                f.write(','.join(metrics_data.keys()) + '\n')
+            f.write(','.join(str(v) for v in metrics_data.values()) + '\n')
+
+    def compare_validation_metrics(self, shap10_valid: Dict, shap20_valid: Dict,
+                                   ensemble_valid: Dict) -> None:
+        """Compare models on validation data."""
+        print(f"\n{'=' * 120}")
+        print("VALIDATION METRICS COMPARISON")
+        print(f"{'=' * 120}")
+
+        # Headers
+        headers = ['Horizon', 'Model', 'W.RMSE', 'Pearson', 'RMSE', 'MAE', 'MAPE(%)', 'SMAPE(%)', 'R²', 'Dir.Acc.']
+        print(f"\n{'':<8} {'':<12} {'':<12} {'':<10} {'':<12} {'':<12} {'':<12} {'':<12} {'':<10} {'':<12}")
+        print(
+            f"{'Horizon':<8} {'Model':<12} {'Weighted':<12} {'Pearson':<10} {'RMSE':<12} {'MAE':<12} {'MAPE(%)':<12} {'SMAPE(%)':<12} {'R²':<10} {'Dir.Acc.':<12}")
+        print(f"{'':<8} {'':<12} {'RMSE':<12} {'':<10} {'':<12} {'':<12} {'':<12} {'':<12} {'':<10} {'':<12}")
+        print("-" * 120)
 
         for h in self.horizons:
             y_true, weights = self.load_validation_data(h)
@@ -137,22 +178,70 @@ class EnsembleWithKaggleComparison:
             # SHAP-10
             if shap10_valid[h] is not None:
                 m10 = self.compute_metrics(y_true, shap10_valid[h], weights)
+                self._save_metrics(h, 'shap10', m10)
                 print(
-                    f"{h:<8} {'SHAP-10':<12} {m10['weighted_rmse']:<15.6f} {m10['pearson']:<12.6f} {m10['rmse']:<12.6f} {m10['r2']:<10.6f}")
+                    f"{h:<8} {'SHAP-10':<12} {m10['weighted_rmse']:<12.6f} {m10['pearson']:<10.6f} {m10['rmse']:<12.6f} {m10['mae']:<12.6f} {m10['mape']:<12.4f} {m10['smape']:<12.4f} {m10['r2']:<10.6f} {m10['directional_accuracy']:<12.4f}")
 
             # SHAP-20
             if shap20_valid[h] is not None:
                 m20 = self.compute_metrics(y_true, shap20_valid[h], weights)
+                self._save_metrics(h, 'shap20', m20)
                 print(
-                    f"{h:<8} {'SHAP-20':<12} {m20['weighted_rmse']:<15.6f} {m20['pearson']:<12.6f} {m20['rmse']:<12.6f} {m20['r2']:<10.6f}")
+                    f"{h:<8} {'SHAP-20':<12} {m20['weighted_rmse']:<12.6f} {m20['pearson']:<10.6f} {m20['rmse']:<12.6f} {m20['mae']:<12.6f} {m20['mape']:<12.4f} {m20['smape']:<12.4f} {m20['r2']:<10.6f} {m20['directional_accuracy']:<12.4f}")
 
             # Ensemble
             if ensemble_valid[h] is not None:
                 m_ens = self.compute_metrics(y_true, ensemble_valid[h], weights)
+                self._save_metrics(h, 'ensemble', m_ens)
                 print(
-                    f"{h:<8} {'Ensemble':<12} {m_ens['weighted_rmse']:<15.6f} {m_ens['pearson']:<12.6f} {m_ens['rmse']:<12.6f} {m_ens['r2']:<10.6f}")
+                    f"{h:<8} {'Ensemble':<12} {m_ens['weighted_rmse']:<12.6f} {m_ens['pearson']:<10.6f} {m_ens['rmse']:<12.6f} {m_ens['mae']:<12.6f} {m_ens['mape']:<12.4f} {m_ens['smape']:<12.4f} {m_ens['r2']:<10.6f} {m_ens['directional_accuracy']:<12.4f}")
 
-            print("-" * 80)
+            print("-" * 120)
+
+    def print_improvement_table(self) -> None:
+        """Print improvement table of ensemble vs SHAP-10."""
+        print(f"\n{'=' * 80}")
+        print("IMPROVEMENT ANALYSIS: Ensemble vs SHAP-10")
+        print(f"{'=' * 80}")
+
+        print(f"\n{'Horizon':<8} {'Metric':<15} {'SHAP-10':<15} {'Ensemble':<15} {'Improvement':<15} {'% Change':<12}")
+        print("-" * 85)
+
+        for h in self.horizons:
+            # Load metrics from saved files
+            shap10_path = self.metrics_dir / f'metrics_h{h}_shap10.json'
+            ensemble_path = self.metrics_dir / f'metrics_h{h}_ensemble.json'
+
+            if shap10_path.exists() and ensemble_path.exists():
+                with open(shap10_path, 'r') as f:
+                    shap10 = json.load(f)
+                with open(ensemble_path, 'r') as f:
+                    ensemble = json.load(f)
+
+                # Weighted RMSE (higher is better)
+                imp_wrmse = ensemble['weighted_rmse'] - shap10['weighted_rmse']
+                pct_wrmse = (imp_wrmse / shap10['weighted_rmse']) * 100 if shap10['weighted_rmse'] != 0 else 0
+                arrow_wrmse = "✅" if imp_wrmse > 0 else "❌"
+
+                print(
+                    f"{h:<8} {'Weighted RMSE':<15} {shap10['weighted_rmse']:<15.6f} {ensemble['weighted_rmse']:<15.6f} {arrow_wrmse} {imp_wrmse:+.6f} {pct_wrmse:+.2f}%")
+
+                # RMSE (lower is better)
+                imp_rmse = shap10['rmse'] - ensemble['rmse']
+                pct_rmse = (imp_rmse / shap10['rmse']) * 100 if shap10['rmse'] != 0 else 0
+                arrow_rmse = "✅" if imp_rmse > 0 else "❌"
+
+                print(
+                    f"{h:<8} {'RMSE':<15} {shap10['rmse']:<15.6f} {ensemble['rmse']:<15.6f} {arrow_rmse} {imp_rmse:+.6f} {pct_rmse:+.2f}%")
+
+                # Pearson (higher is better)
+                imp_pear = ensemble['pearson'] - shap10['pearson']
+                pct_pear = (imp_pear / shap10['pearson']) * 100 if shap10['pearson'] != 0 else 0
+                arrow_pear = "✅" if imp_pear > 0 else "❌"
+
+                print(
+                    f"{h:<8} {'Pearson':<15} {shap10['pearson']:<15.6f} {ensemble['pearson']:<15.6f} {arrow_pear} {imp_pear:+.6f} {pct_pear:+.2f}%")
+                print("-" * 85)
 
     def print_kaggle_comparison(self) -> None:
         """Print Kaggle results comparison table for report."""
@@ -173,7 +262,7 @@ class EnsembleWithKaggleComparison:
         print(f"  • SHAP-20 alone performs worse than SHAP-10")
         print(f"  • Ensemble combines best of both models")
 
-    def generate_submission(self, ensemble_preds: dict) -> Path:
+    def generate_submission(self, ensemble_preds: Dict) -> Path:
         """Generate final submission file."""
         all_ids = []
         all_preds = []
@@ -221,6 +310,9 @@ class EnsembleWithKaggleComparison:
         # Compare validation metrics
         self.compare_validation_metrics(shap10_valid, shap20_valid, ensemble_valid)
 
+        # Print improvement table
+        self.print_improvement_table()
+
         # Print Kaggle comparison
         self.print_kaggle_comparison()
 
@@ -232,6 +324,7 @@ class EnsembleWithKaggleComparison:
         print(f"{'=' * 60}")
         print(f"Weights: 80% SHAP-10, 20% SHAP-20")
         print(f"Submission: {submission_path}")
+        print(f"Metrics saved to: {self.metrics_dir}")
         print(f"{'=' * 60}")
 
         return submission_path

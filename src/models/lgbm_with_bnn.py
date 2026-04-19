@@ -7,6 +7,7 @@ LightGBM model using top 10 SHAP features + BNN predictions from either:
 - bnn_aggregated (aggregated groups)
 
 Compares performance with and without BNN features.
+Saves metrics to JSON and CSV files.
 """
 
 import polars as pl
@@ -44,6 +45,7 @@ class LGBMWithBNN:
     """
     LightGBM model using top 10 SHAP features + BNN predictions.
     Supports both SHAP-10 BNN and Aggregated BNN.
+    Saves metrics to JSON and CSV files.
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
@@ -57,8 +59,10 @@ class LGBMWithBNN:
         self.bnn_agg_dir = project_root / 'results/predictions/bnn_aggregated'
         self.models_dir = project_root / 'results/models/lgbm_with_bnn'
         self.predictions_dir = project_root / 'results/predictions/lgbm_with_bnn'
+        self.metrics_dir = project_root / 'results/metrics'
 
-        for dir_path in [self.models_dir, self.predictions_dir]:
+        # Create directories
+        for dir_path in [self.models_dir, self.predictions_dir, self.metrics_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
         # Validation split (from notebook)
@@ -96,7 +100,8 @@ class LGBMWithBNN:
 
         return train_df, test_df
 
-    def load_bnn_predictions(self, horizon: int, bnn_type: str = 'shap10') -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
+    def load_bnn_predictions(self, horizon: int, bnn_type: str = 'shap10') -> Tuple[
+        Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
         """Load BNN predictions for both train and test data."""
         if bnn_type == 'shap10':
             pred_dir = self.bnn_shap10_dir
@@ -142,9 +147,33 @@ class LGBMWithBNN:
             'verbose': -1
         }
 
+    def _save_metrics(self, horizon: int, model_name: str,
+                      train_metrics: MetricResults, valid_metrics: MetricResults,
+                      best_iter: int, feature_count: int) -> None:
+        """Save metrics to JSON and CSV files."""
+        metrics_dict = {
+            'horizon': horizon,
+            'model': model_name,
+            'timestamp': datetime.now().isoformat(),
+            'train': train_metrics.to_dict(),
+            'valid': valid_metrics.to_dict(),
+            'best_iteration': best_iter,
+            'features_used': feature_count
+        }
+
+        # Save JSON
+        json_path = self.metrics_dir / f'metrics_h{horizon}_{model_name}.json'
+        TimeSeriesMetrics.save_metrics_to_json(metrics_dict, json_path)
+
+        # Save CSV (appends to single file)
+        csv_path = self.metrics_dir / 'all_metrics.csv'
+        TimeSeriesMetrics.save_metrics_to_csv(metrics_dict, csv_path, 'train')
+        TimeSeriesMetrics.save_metrics_to_csv(metrics_dict, csv_path, 'valid')
+
     def train_horizon(self, horizon: int, bnn_type: Optional[str] = None) -> ValidationResults:
         """Train model for single horizon with optional BNN features."""
         bnn_label = f"BNN-{bnn_type}" if bnn_type else "BASELINE"
+        model_name = f"lgbm_{bnn_label.lower()}" if bnn_type else "lgbm_baseline"
         self.logger.info(f"Training H={horizon} ({bnn_label})...")
 
         # Load data
@@ -226,12 +255,16 @@ class LGBMWithBNN:
         # Test predictions
         y_test_pred = final_model.predict(X_test)
 
-        # Save
+        # Save metrics
+        self._save_metrics(horizon, model_name, train_metrics, valid_metrics, best_iter, len(features))
+
+        # Save model
         suffix = f"_{bnn_type}" if bnn_type else "_baseline"
         model_path = self.models_dir / f'lgbm_h{horizon}{suffix}.pkl'
         with open(model_path, 'wb') as f:
             pickle.dump(final_model, f)
 
+        # Save predictions
         pred_path = self.predictions_dir / f'lgbm_h{horizon}{suffix}_predictions.npz'
         np.savez(pred_path, train_pred=y_train_pred, test_pred=y_test_pred)
 
@@ -388,4 +421,5 @@ if __name__ == "__main__":
 
     print("\n" + "=" * 60)
     print("LGBM with BNN comparison complete")
+    print(f"✅ Metrics saved to: {model.metrics_dir}")
     print("=" * 60)

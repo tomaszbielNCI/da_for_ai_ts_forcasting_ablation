@@ -4,6 +4,7 @@ LGBM Model with Top 20 SHAP Features
 
 LightGBM model using top 20 SHAP features per horizon with horizon-specific parameters.
 Based on lgbm_shap_10.py pattern with top_20 data.
+Saves metrics to JSON and CSV files.
 """
 
 import polars as pl
@@ -19,6 +20,7 @@ from datetime import datetime
 
 # Add src to path and import metrics
 import sys
+
 sys.path.append(str(Path(__file__).parent.parent))
 from src.metrics.evaluation import TimeSeriesMetrics, MetricResults
 
@@ -45,6 +47,7 @@ class LGBM_SHAP_20:
     - Time split validation (train ts <= 3000, valid 3001-3600)
     - Early stopping
     - Comprehensive metrics (Weighted RMSE, Pearson, RMSE)
+    - Saves metrics to JSON and CSV files
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
@@ -57,10 +60,11 @@ class LGBM_SHAP_20:
         self.processed_dir = project_root / 'data/processed/top_20'
         self.models_dir = project_root / 'results/models/lgbm_shap_20'
         self.predictions_dir = project_root / 'results/predictions/lgbm_shap_20'
+        self.metrics_dir = project_root / 'results/metrics'
         self.shap_results_path = project_root / 'results/shap/data/horizon_specific_top_features.json'
 
         # Create directories
-        for dir_path in [self.models_dir, self.predictions_dir]:
+        for dir_path in [self.models_dir, self.predictions_dir, self.metrics_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
         # Validation split parameters (from notebook)
@@ -176,6 +180,29 @@ class LGBM_SHAP_20:
             'verbose': -1
         }
 
+    def _save_metrics(self, horizon: int, train_metrics: MetricResults,
+                      valid_metrics: MetricResults, best_iter: int,
+                      feature_count: int) -> None:
+        """Save metrics to JSON and CSV files."""
+        metrics_dict = {
+            'horizon': horizon,
+            'model': 'lgbm_shap_20',
+            'timestamp': datetime.now().isoformat(),
+            'train': train_metrics.to_dict(),
+            'valid': valid_metrics.to_dict(),
+            'best_iteration': best_iter,
+            'features_used': feature_count
+        }
+
+        # Save JSON
+        json_path = self.metrics_dir / f'metrics_h{horizon}_lgbm_shap_20.json'
+        TimeSeriesMetrics.save_metrics_to_json(metrics_dict, json_path)
+
+        # Save CSV (appends to single file)
+        csv_path = self.metrics_dir / 'all_metrics.csv'
+        TimeSeriesMetrics.save_metrics_to_csv(metrics_dict, csv_path, 'train')
+        TimeSeriesMetrics.save_metrics_to_csv(metrics_dict, csv_path, 'valid')
+
     def train_horizon(self, horizon: int, train_df: pl.DataFrame, test_df: pl.DataFrame) -> ValidationResults:
         """Train model for single horizon with time validation and early stopping."""
         self.logger.info(f"Training H={horizon}...")
@@ -239,6 +266,9 @@ class LGBM_SHAP_20:
 
         # Predict on test
         y_test_pred = final_model.predict(X_test)
+
+        # Save metrics
+        self._save_metrics(horizon, train_metrics, valid_metrics, best_iter, len(feature_cols))
 
         # Save model
         model_path = self.models_dir / f'lgbm_shap_20_h{horizon}.pkl'
@@ -345,7 +375,8 @@ class LGBM_SHAP_20:
         print("LGBM SHAP-20 - FINAL SUMMARY")
         print(f"{'=' * 80}")
 
-        print(f"\n{'Horizon':<8} {'Train WRMSE':<14} {'Valid WRMSE':<14} {'Train Pearson':<14} {'Valid Pearson':<14} {'Best Iter':<10} {'Features':<10}")
+        print(
+            f"\n{'Horizon':<8} {'Train WRMSE':<14} {'Valid WRMSE':<14} {'Train Pearson':<14} {'Valid Pearson':<14} {'Best Iter':<10} {'Features':<10}")
         print("-" * 90)
 
         for h in self.horizons:
@@ -358,6 +389,7 @@ class LGBM_SHAP_20:
         print(f"Total training time: {total_time:.2f} seconds ({total_time / 60:.2f} minutes)")
         print(f"Models saved to: {self.models_dir}")
         print(f"Predictions saved to: {self.predictions_dir}")
+        print(f"Metrics saved to: {self.metrics_dir}")
         print(f"{'=' * 80}")
 
 

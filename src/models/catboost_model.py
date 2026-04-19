@@ -4,6 +4,7 @@ CatBoost Model with Top 10 SHAP Features
 
 CatBoost model using top 10 SHAP features per horizon with horizon-specific parameters.
 Based on final notebook version (with early stopping for CatBoost).
+Saves metrics to JSON and CSV files.
 """
 
 import polars as pl
@@ -12,6 +13,7 @@ import catboost as cb
 import logging
 import time
 import pickle
+import json
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
@@ -46,6 +48,7 @@ class CatBoostModel:
     - Time split validation (train ts <= 3000, valid 3001-3600)
     - Early stopping (works with CatBoost)
     - Comprehensive metrics (Weighted RMSE, Pearson, RMSE)
+    - Saves metrics to JSON and CSV files
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
@@ -58,10 +61,11 @@ class CatBoostModel:
         self.processed_dir = project_root / 'data/processed/top_10'
         self.models_dir = project_root / 'results/models/catboost_shap_10'
         self.predictions_dir = project_root / 'results/predictions/catboost_shap_10'
+        self.metrics_dir = project_root / 'results/metrics'
         self.shap_results_path = project_root / 'results/shap/data/horizon_specific_top_features.json'
 
         # Create directories
-        for dir_path in [self.models_dir, self.predictions_dir]:
+        for dir_path in [self.models_dir, self.predictions_dir, self.metrics_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
         # Validation split parameters (from notebook)
@@ -173,6 +177,29 @@ class CatBoostModel:
             'verbose': False
         }
 
+    def _save_metrics(self, horizon: int, train_metrics: MetricResults,
+                      valid_metrics: MetricResults, best_iter: int,
+                      feature_count: int) -> None:
+        """Save metrics to JSON and CSV files."""
+        metrics_dict = {
+            'horizon': horizon,
+            'model': 'catboost_shap_10',
+            'timestamp': datetime.now().isoformat(),
+            'train': train_metrics.to_dict(),
+            'valid': valid_metrics.to_dict(),
+            'best_iteration': best_iter,
+            'features_used': feature_count
+        }
+
+        # Save JSON
+        json_path = self.metrics_dir / f'metrics_h{horizon}_catboost_shap_10.json'
+        TimeSeriesMetrics.save_metrics_to_json(metrics_dict, json_path)
+
+        # Save CSV (appends to single file)
+        csv_path = self.metrics_dir / 'all_metrics.csv'
+        TimeSeriesMetrics.save_metrics_to_csv(metrics_dict, csv_path, 'train')
+        TimeSeriesMetrics.save_metrics_to_csv(metrics_dict, csv_path, 'valid')
+
     def train_horizon(self, horizon: int, train_df: pl.DataFrame, test_df: pl.DataFrame) -> ValidationResults:
         """Train model for single horizon with time validation and early stopping."""
         self.logger.info(f"Training CatBoost H={horizon}...")
@@ -237,6 +264,9 @@ class CatBoostModel:
 
         # Predict on test
         y_test_pred = final_model.predict(X_test)
+
+        # Save metrics
+        self._save_metrics(horizon, train_metrics, valid_metrics, best_iter, len(feature_cols))
 
         # Save model
         model_path = self.models_dir / f'catboost_shap_10_h{horizon}.pkl'
@@ -357,6 +387,7 @@ class CatBoostModel:
         print(f"Total training time: {total_time:.2f} seconds ({total_time / 60:.2f} minutes)")
         print(f"Models saved to: {self.models_dir}")
         print(f"Predictions saved to: {self.predictions_dir}")
+        print(f"Metrics saved to: {self.metrics_dir}")
         print(f"{'=' * 80}")
 
 

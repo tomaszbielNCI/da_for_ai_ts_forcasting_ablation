@@ -4,6 +4,7 @@ Walk-Forward Validation - Trio (LGBM + XGBoost + CatBoost)
 
 Implements walk-forward validation with 4 large windows using all three models.
 Based on notebook walk-forward logic with 4 windows and exponential weights.
+Saves metrics to JSON and CSV files.
 
 Windows:
 - Window 1: train [1-1000] → valid [1001-1500]
@@ -20,6 +21,7 @@ from catboost import CatBoostRegressor
 import logging
 import time
 import pickle
+import json
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass, field
@@ -64,6 +66,7 @@ class WalkForwardTrio:
     - Exponential weights (more recent windows have higher weight)
     - Weighted ensemble of window predictions per model
     - Final ensemble: average of three models
+    - Saves metrics to JSON and CSV files
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
@@ -76,9 +79,10 @@ class WalkForwardTrio:
         self.processed_dir = project_root / 'data/processed/top_10'
         self.models_dir = project_root / 'results/models/walkforward_trio'
         self.predictions_dir = project_root / 'results/predictions/walkforward_trio'
+        self.metrics_dir = project_root / 'results/metrics'
 
         # Create directories
-        for dir_path in [self.models_dir, self.predictions_dir]:
+        for dir_path in [self.models_dir, self.predictions_dir, self.metrics_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
         # 4 large windows (from notebook)
@@ -172,6 +176,29 @@ class WalkForwardTrio:
             'verbose': False
         }
 
+    def _save_metrics(self, horizon: int, window_name: str, model_name: str,
+                      train_metrics: MetricResults, valid_metrics: MetricResults,
+                      best_iter: int) -> None:
+        """Save metrics to JSON and CSV files."""
+        metrics_dict = {
+            'horizon': horizon,
+            'window': window_name,
+            'model': model_name,
+            'timestamp': datetime.now().isoformat(),
+            'train': train_metrics.to_dict(),
+            'valid': valid_metrics.to_dict(),
+            'best_iteration': best_iter
+        }
+
+        # Save JSON
+        json_path = self.metrics_dir / f'metrics_wf_h{horizon}_{window_name}_{model_name}.json'
+        TimeSeriesMetrics.save_metrics_to_json(metrics_dict, json_path)
+
+        # Save CSV (appends to single file)
+        csv_path = self.metrics_dir / 'all_metrics_walkforward.csv'
+        TimeSeriesMetrics.save_metrics_to_csv(metrics_dict, csv_path, 'train')
+        TimeSeriesMetrics.save_metrics_to_csv(metrics_dict, csv_path, 'valid')
+
     def load_engineered_data(self, horizon: int) -> pl.DataFrame:
         """Load engineered data for a specific horizon."""
         train_path = self.processed_dir / f'train_h{horizon}_engineered.parquet'
@@ -214,6 +241,9 @@ class WalkForwardTrio:
         train_metrics = TimeSeriesMetrics.evaluate_all(y_train, y_train_pred, w_train, y_train=y_train)
         valid_metrics = TimeSeriesMetrics.evaluate_all(y_valid, y_valid_pred, w_valid, y_train=y_train)
 
+        # Save metrics
+        self._save_metrics(horizon, window['name'], 'lgbm', train_metrics, valid_metrics, best_iter)
+
         n_windows = len(self.windows)
         weight = np.exp(-(n_windows - 1 - w_idx) * 0.3)
 
@@ -237,6 +267,9 @@ class WalkForwardTrio:
 
         train_metrics = TimeSeriesMetrics.evaluate_all(y_train, y_train_pred, w_train, y_train=y_train)
         valid_metrics = TimeSeriesMetrics.evaluate_all(y_valid, y_valid_pred, w_valid, y_train=y_train)
+
+        # Save metrics
+        self._save_metrics(horizon, window['name'], 'xgb', train_metrics, valid_metrics, params['n_estimators'])
 
         n_windows = len(self.windows)
         weight = np.exp(-(n_windows - 1 - w_idx) * 0.3)
@@ -269,6 +302,9 @@ class WalkForwardTrio:
 
         train_metrics = TimeSeriesMetrics.evaluate_all(y_train, y_train_pred, w_train, y_train=y_train)
         valid_metrics = TimeSeriesMetrics.evaluate_all(y_valid, y_valid_pred, w_valid, y_train=y_train)
+
+        # Save metrics
+        self._save_metrics(horizon, window['name'], 'cat', train_metrics, valid_metrics, best_iter)
 
         n_windows = len(self.windows)
         weight = np.exp(-(n_windows - 1 - w_idx) * 0.3)
@@ -389,6 +425,11 @@ class WalkForwardTrio:
         self._print_summary(results, total_time)
         self._generate_final_submission(results)
 
+        # Print metrics location
+        print(f"\n✅ Metrics saved to: {self.metrics_dir}")
+        print(f"   - Individual JSON files: metrics_wf_h*_*.json")
+        print(f"   - Combined CSV: all_metrics_walkforward.csv")
+
         return results
 
     def _save_horizon_submission(self, horizon: int, predictions: np.ndarray) -> None:
@@ -463,6 +504,7 @@ class WalkForwardTrio:
         print(f"Total time: {total_time:.2f} seconds ({total_time / 60:.2f} minutes)")
         print(f"Models saved to: {self.models_dir}")
         print(f"Predictions saved to: {self.predictions_dir}")
+        print(f"Metrics saved to: {self.metrics_dir}")
         print(f"{'=' * 80}")
 
 
