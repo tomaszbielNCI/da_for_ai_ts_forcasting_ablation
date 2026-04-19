@@ -68,18 +68,18 @@
 
 | Horizon | Model | Weighted RMSE | Pearson | RMSE | MAE | R² | Directional Accuracy | MAPE | SMAPE | Best Iteration | Features Used |
 |---------|-------|---------------|---------|------|-----|----|----------------------|------|-------|----------------|---------------|
-| H1 | LGBM | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H1 | XGBoost | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H1 | CatBoost | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H3 | LGBM | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H3 | XGBoost | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H3 | CatBoost | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H10 | LGBM | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H10 | XGBoost | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H10 | CatBoost | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H25 | LGBM | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H25 | XGBoost | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
-| H25 | CatBoost | Available | Available | Available | Available | Available | Available | Available | Available | Available | Available |
+| H1 | LGBM | 0.019148 | 0.009650 | 10.665119 | 2.189435 | 0.000037 | 0.532535 | 121.903290 | 192.348293 | 14.8 | 0 |
+| H1 | XGBoost | 0.000000 | 0.008851 | 10.665150 | 2.191128 | -0.000013 | 0.520489 | 1814.525 | 173.219 | 500.0 | 0 |
+| H1 | CatBoost | 0.016414 | 0.004300 | 10.665588 | 2.190504 | -0.000106 | 0.518191 | 118.639 | 193.439 | 210.2 | 0 |
+| H3 | LGBM | 0.018634 | 0.019853 | 18.027049 | 3.882627 | 0.000147 | 0.524379 | 104.404 | 194.985 | 4.5 | 0 |
+| H3 | XGBoost | 0.000000 | 0.021620 | 18.033123 | 3.888360 | -0.000053 | 0.505446 | 1310.275 | 171.323 | 500.0 | 0 |
+| H3 | CatBoost | 0.000000 | 0.018732 | 18.029460 | 3.883782 | -0.000229 | 0.519789 | 136.899 | 185.036 | 400.2 | 0 |
+| H10 | LGBM | 0.027624 | 0.074490 | 30.913707 | 7.108846 | 0.002187 | 0.520797 | 119.156 | 191.821 | 4.5 | 0 |
+| H10 | XGBoost | 0.000000 | 0.041192 | 31.022919 | 7.143751 | -0.003066 | 0.510059 | 2296.669 | 163.077 | 500.0 | 0 |
+| H10 | CatBoost | 0.000000 | 0.027829 | 30.947804 | 7.116658 | -0.000722 | 0.522997 | 173.978 | 181.176 | 348.0 | 0 |
+| H25 | LGBM | 0.023045 | 0.093140 | 47.640256 | 11.277569 | -0.001931 | 0.511851 | 116.269 | 192.821 | 4.2 | 0 |
+| H25 | XGBoost | 0.000000 | 0.079761 | 47.519344 | 11.260138 | 0.006183 | 0.509096 | 1876.413 | 156.709 | 500.0 | 0 |
+| H25 | CatBoost | 0.028523 | -0.002739 | 47.655080 | 11.283190 | -0.002762 | 0.502104 | 113.060 | 193.459 | 170.0 | 0 |
 
 ### Table 8: Partial Models - Status Summary
 
