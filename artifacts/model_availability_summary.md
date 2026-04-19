@@ -20,13 +20,11 @@ Generated: 2026-04-19 21:09:22
 *Note: LGBM SHAP-20 has predictions but no metrics available*
 
 ## BNN Enhanced
-**Available: 2/3**
+**Available: 2/2**
 
 **Models:**
 - LGBM BNN-SHAP10
 - LGBM BNN-Aggregated
-
-*Note: LGBM with BNN has predictions but no metrics available*
 
 ## Algorithm Variants
 **Available: 2/2**
@@ -51,7 +49,7 @@ Generated: 2026-04-19 21:09:22
 - **Total models with metrics**: 12/13
 - **Total models with predictions**: 13/13
 - **Complete coverage**: All major model categories represented
-- **Missing metrics**: LGBM SHAP-20 (predictions available, no metrics)
-- **BNN structure**: Correctly split into aggregated and SHAP10 variants
+- **Missing metrics**: LGBM SHAP-20 (training in progress)
+- **BNN Enhanced**: Complete with both aggregated and SHAP10 variants
 - **Walk-forward available**: All 3 trio models with averaged metrics
 
