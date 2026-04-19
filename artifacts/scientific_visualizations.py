@@ -162,6 +162,10 @@ class ScientificVisualizationGenerator:
             # Pivot data for heatmap
             pivot_df = df.pivot(index='Model', columns='Horizon', values=metric)
             
+            # Ensure correct horizon order
+            horizon_order = ['H1', 'H3', 'H10', 'H25']
+            pivot_df = pivot_df.reindex(columns=horizon_order)
+            
             # Create heatmap
             if metric in ['Weighted RMSE', 'RMSE', 'MAE']:
                 # Lower is better - use reversed colormap
