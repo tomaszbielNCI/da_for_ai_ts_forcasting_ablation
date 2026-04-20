@@ -13,7 +13,7 @@ paths:
     tables: ./artifacts/tables
   data:
     download:
-      base_dir: ./downloaded_data
+      base_dir: ./data
       # You can use either direct URLs or Google Drive file IDs
       # Google Drive file IDs are recommended for large files (virus scan bypass)
       test_gdrive_id: 1cWxdooyeSSMghsiUdPIDSIXEepLyDEa6

@@ -127,13 +127,16 @@ class SHAPAnalyzer:
             
             # Use full training data for SHAP analysis
             horizon_df = train_df.filter(pl.col('horizon') == horizon)
-            train_full = horizon_df.filter(pl.col('ts_index') <= self.baseline_lgbm.full_train_end)
+            train_full = horizon_df.filter(pl.col('ts_index') <= self.baseline_lgbm.max_ts_train)
             
-            # Prepare data
+            # Prepare data (no validation needed for SHAP)
             X_train, y_train, w_train = self.baseline_lgbm.prepare_data(train_full, feature_cols, is_test=False)
             
+            # For SHAP we don't need validation - use dummy data
+            X_valid, y_valid, w_valid = X_train[:1], y_train[:1], w_train[:1]
+            
             # Train model
-            model = self.baseline_lgbm.train_model(X_train, y_train, w_train)
+            model = self.baseline_lgbm.train_model(X_train, y_train, w_train, X_valid, y_valid, w_valid)
             self.models[horizon] = {
                 'model': model,
                 'features': feature_cols,
@@ -176,8 +179,8 @@ class SHAPAnalyzer:
         
         # Validation samples count
         validation_samples = len(train_data.filter(
-            (pl.col('ts_index') > self.baseline_lgbm.time_split_train) & 
-            (pl.col('ts_index') <= self.baseline_lgbm.time_split_valid_end)
+            (pl.col('ts_index') > self.baseline_lgbm.train_split) & 
+            (pl.col('ts_index') <= self.baseline_lgbm.valid_end)
         ))
         
         return SHAPResults(
@@ -206,7 +209,30 @@ class SHAPAnalyzer:
             # Print results
             self._print_horizon_results(horizon)
         
+        # Save results for LGBM_SHAP_10
+        self.save_shap_results()
+        
         return self.shap_results
+    
+    def save_shap_results(self) -> None:
+        """Save SHAP results to JSON file for LGBM_SHAP_10 to use."""
+        self.logger.info("Saving SHAP results to JSON...")
+        
+        # Convert to serializable format
+        shap_dict = {}
+        for horizon, result in self.shap_results.items():
+            shap_dict[str(horizon)] = {
+                'features': result.top_features[:10],  # Top 10 for LGBM_SHAP_10
+                'top_shap_values': result.top_shap_values[:10].tolist(),
+                'top_directions': result.top_directions[:10].tolist()
+            }
+        
+        # Save to expected location
+        output_path = self.data_dir / 'horizon_specific_top_features.json'
+        with open(output_path, 'w') as f:
+            json.dump(shap_dict, f, indent=2)
+        
+        self.logger.info(f"SHAP results saved to: {output_path}")
     
     def _print_horizon_results(self, horizon: int) -> None:
         """Print SHAP results for a horizon."""
