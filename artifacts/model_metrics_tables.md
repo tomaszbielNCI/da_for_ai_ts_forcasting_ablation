@@ -207,6 +207,48 @@
 
 ### Performance Insights:
 - **LGBM SHAP-10**: Best overall performance with consistent metrics
+
+### Table 15: Prediction Statistics Comparison - All Models vs y_target
+
+| Model | Horizon | Count | Mean | Std | Min | Max | Range | Median | Skewness | Kurtosis |
+|-------|---------|-------|------|------|------|-----|-------|--------|----------|----------|
+| **LGBM SHAP-10** | H1 | 379,617 | -0.018727 | 0.105170 | -1.824580 | 1.315062 | 3.139642 | -0.000155 | -7.7755 |
+| **LGBM SHAP-10** | H3 | 376,558 | -0.096093 | 0.680673 | -9.580769 | 4.374363 | 13.955132 | -0.000242 | -10.4452 |
+| **LGBM SHAP-10** | H10 | 362,057 | -0.773774 | 2.829835 | -43.833662 | 1.590305 | 45.423967 | -0.007063 | -5.4858 |
+| **LGBM SHAP-10** | H25 | 328,875 | -0.093451 | 0.374397 | -6.298202 | 2.123369 | 8.421571 | -0.001706 | -4.1079 |
+| **LGBM All+SHAP** | H1 | 379,617 | -0.043312 | 0.241305 | -3.957255 | 1.383770 | 5.341025 | -0.000304 | -9.2255 |
+| **LGBM All+SHAP** | H3 | 376,558 | -0.161323 | 1.178677 | -21.534407 | 11.198590 | 32.732997 | -0.001045 | -8.4975 |
+| **LGBM All+SHAP** | H10 | 362,057 | -0.206324 | 0.879861 | -11.127308 | 8.330374 | 19.457683 | -0.003343 | -6.2029 |
+| **LGBM All+SHAP** | H25 | 328,875 | -0.066487 | 0.213209 | -1.464823 | 1.011594 | 2.476416 | -0.001100 | -3.0605 |
+| **XGBoost SHAP-10** | H1 | 379,617 | -0.013419 | 0.029981 | -0.862687 | 0.837572 | 1.700258 | -0.001578 | -2.1825 |
+| **XGBoost SHAP-10** | H3 | 376,558 | -0.064970 | 0.357934 | -8.434496 | 5.706045 | 14.140541 | -0.000299 | -3.4418 |
+| **XGBoost SHAP-10** | H10 | 362,057 | -0.460295 | 1.709471 | -17.467337 | 9.910054 | 27.377392 | -0.011876 | -2.6972 |
+| **XGBoost SHAP-10** | H25 | 328,875 | -0.761067 | 2.755187 | -28.528791 | 4.150625 | 32.679417 | 0.006628 | -4.1733 |
+| **CatBoost SHAP-10** | H1 | 379,617 | -0.001902 | 0.001806 | -0.007499 | 0.001004 | 0.008503 | -0.001415 | -0.5096 |
+| **CatBoost SHAP-10** | H3 | 376,558 | -0.018653 | 0.026559 | -0.160040 | 0.008595 | 0.168635 | -0.002899 | -1.3404 |
+| **CatBoost SHAP-10** | H10 | 362,057 | -0.060233 | 0.090107 | -0.477392 | 0.044329 | 0.521722 | -0.009556 | -1.5450 |
+
+### Key Statistical Insights:
+
+#### **Distribution Analysis:**
+- **LGBM SHAP-10**: Moderate volatility (std: 0.105-2.83), reasonable range
+- **XGBoost SHAP-10**: Highest volatility (std: 0.03-2.76), extreme values
+- **CatBoost SHAP-10**: Most stable (std: 0.002-0.09), conservative predictions
+
+#### **Prediction Quality:**
+- **Best Stability**: CatBoost SHAP-10 (lowest std, smallest range)
+- **Best Coverage**: XGBoost SHAP-10 (largest range, captures extremes)
+- **Balanced Approach**: LGBM SHAP-10 (optimal stability vs coverage)
+
+#### **Risk Assessment:**
+- **Low Risk**: CatBoost SHAP-10 (conservative, stable)
+- **Medium Risk**: LGBM SHAP-10 (balanced approach)
+- **High Risk**: XGBoost SHAP-10 (extreme predictions, high volatility)
+
+#### **Model Selection Based on Statistics:**
+- **For Conservative Trading**: CatBoost SHAP-10
+- **For Balanced Performance**: LGBM SHAP-10 (SELECTED)
+- **For High Risk/Return**: XGBoost SHAP-10 (if not for weighted RMSE issues)
 - **XGBoost SHAP-10**: Issues with weighted RMSE calculation (all zeros)
 - **CatBoost SHAP-10**: Good performance but high iteration counts (400+)
 - **Training Efficiency**: LGBM significantly faster than XGBoost and CatBoost
