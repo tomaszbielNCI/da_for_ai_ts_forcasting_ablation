@@ -354,7 +354,7 @@ class TimeSeriesMetrics:
         with open(filepath, 'w') as f:
             json.dump(metrics_dict, f, indent=2)
 
-        print(f"  ✅ JSON saved: {filepath}")
+        print(f"  [OK] JSON saved: {filepath}")
 
     @staticmethod
     def save_metrics_to_csv(metrics_dict: Dict[str, Any], filepath: Path,
@@ -404,7 +404,7 @@ class TimeSeriesMetrics:
                 writer.writeheader()
             writer.writerow(row)
 
-        print(f"  ✅ CSV saved: {filepath}")
+        print(f"  [OK] CSV saved: {filepath}")
 
     @staticmethod
     def save_all_metrics(metrics_dict: Dict[str, Any],

@@ -118,7 +118,7 @@ da_for_ai_ts_forcasting_ablation/
 **Important Note**: Weighted RMSE uses a special formula where higher values indicate better performance (0.000000 = worst performance, higher values = better accuracy)
 
 ### Presentation Requirements
-- **10 minutes maximum**, 7 slides (30% of learning outcomes)
+- **10 minutes maximum**, 7 slides (!? 30% of learning outcomes)
 - **Methodology overview** and key findings
 - **Academic and practical implications**
 
@@ -144,11 +144,6 @@ da_for_ai_ts_forcasting_ablation/
 
 **Note**: For Weighted RMSE, higher values indicate better performance (0.000000 = worst, higher = better)
 
-#### CatBoost SHAP-10 Complete Results
-- **H1**: Weighted RMSE: 0.018325, Pearson: 0.004171, Iter: 499
-- **H3**: Weighted RMSE: 0.000000 (worst), Pearson: 0.009263, Iter: 499
-- **H10**: Weighted RMSE: 0.047505, Pearson: 0.014024, Iter: 434
-- **H25**: Weighted RMSE: 0.049986, Pearson: 0.000929, Iter: 493
 
 ### Feature Engineering Evolution
 - **Baseline**: 86 raw features

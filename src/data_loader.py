@@ -125,7 +125,9 @@ class DataLoader:
             test_path = local_paths['test']
             
         else:  # download
-            download_dir = Path(self.data_config.get('download', {}).get('base_dir', './downloaded_data'))
+            download_dir = Path(self.data_config.get('download', {}).get('base_dir', './data'))
+            # Create directory if it doesn't exist
+            download_dir.mkdir(parents=True, exist_ok=True)
             train_path = str(download_dir / 'train.parquet')
             test_path = str(download_dir / 'test.parquet')
         
@@ -231,7 +233,9 @@ class DataLoader:
         test_url = download_config.get('test_url')
         train_gdrive_id = download_config.get('train_gdrive_id')
         test_gdrive_id = download_config.get('test_gdrive_id')
-        download_dir = Path(download_config.get('base_dir', './downloaded_data'))
+        download_dir = Path(download_config.get('base_dir', './data'))
+        # Create directory if it doesn't exist
+        download_dir.mkdir(parents=True, exist_ok=True)
         
         # Check for either URLs or GDrive IDs
         if not train_url and not train_gdrive_id:
@@ -276,8 +280,8 @@ class DataLoader:
             self.logger.info(f"Loading test data from: {self.test_path}")
             test_data = pl.read_parquet(self.test_path)
             
-            self.logger.info(f"✅ Train data shape: {train_data.shape}")
-            self.logger.info(f"✅ Test data shape: {test_data.shape}")
+            self.logger.info(f"[OK] Train data shape: {train_data.shape}")
+            self.logger.info(f"[OK] Test data shape: {test_data.shape}")
             
             return train_data, test_data
             
